@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from '@/components/HelloWorld.vue'
+import login from '@/views/login/login.vue'
 //注册 vue-router
 Vue.use(VueRouter)
 // 实例化
@@ -11,6 +12,10 @@ const router = new VueRouter({
         {
             path: '/',
             component: App
+        },
+        {
+            path:'/login',
+            component:login
         }
     ]
 })

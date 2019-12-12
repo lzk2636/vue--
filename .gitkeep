@@ -6,6 +6,7 @@ src 源码目录
 + |- views 路由页面 组件目录
 +   |- .gitkeep
 + |- router 路由目录
-+   |- .gitkeep
+-   |- .gitkeep
++   |- .index.js
   |- App.vue 根组件
   |- main.js 入口模块

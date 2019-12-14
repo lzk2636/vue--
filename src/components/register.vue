@@ -29,7 +29,7 @@
       <el-row>
         <el-col :span="18">
           <el-form-item label="图形码" :label-width="formLabelWidth">
-            <el-input placeholder></el-input>
+            <el-input placeholder class="captcha"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -39,7 +39,7 @@
       <el-row>
         <el-col :span="18">
           <el-form-item label="验证码" :label-width="formLabelWidth">
-            <el-input placeholder></el-input>
+            <el-input placeholder class="captcha" ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6">
@@ -101,13 +101,19 @@ export default {
 //   }
 .el-dialog__header {
   /* height: 53px; */
-   color: #fff;
   background: linear-gradient(
-    225deg,
+      225deg,
     rgba(20, 147, 250, 1),
     rgba(1, 198, 250, 1)
   );
+  .el-dialog__title{
+   color: #fff;
+
+  }
  
+}
+.captcha{
+    width: 80%;
 }
 
 .avatar-uploader {

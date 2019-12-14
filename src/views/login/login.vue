@@ -9,31 +9,27 @@
         <span class="use">用户登录</span>
       </div>
       <!-- 登入表单验证 -->
-      <el-form ref="form" id="login-form" :model="form">
+      <el-form ref="form" id="login-form" :model="form" :rules="rules" status-icon>
         <!-- 输入用户名 -->
-        <el-form-item>
-          <el-input v-model="form.name" prefix-icon="el-icon-user" placeholder="请输入用户名"></el-input>
+        <el-form-item prop="phone">
+          <el-input v-model="form.phone" prefix-icon="el-icon-user" placeholder="请输入手机号"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
-            v-model="form.name"
+            v-model="form.password"
             prefix-icon="el-icon-lock"
             show-password
             placeholder="请输入密码"
           ></el-input>
         </el-form-item>
         <!-- 验证码 -->
-        <el-form-item>
+        <el-form-item prop="captcha">
           <el-row>
             <el-col :span="18">
-              <el-input
-                v-model="form.name"
-                prefix-icon="el-icon-key"
-                placeholder="请输入验证码"
-              ></el-input>
+              <el-input v-model="form.captcha" prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="6">
-              <img src="../../assets/image/yanzhencode.png" class="code" />
+              <img :src="captchaUrl" class="code" @click="changCaptcha"/>
             </el-col>
           </el-row>
         </el-form-item>
@@ -48,14 +44,14 @@
 
         <!-- 按钮 -->
         <el-form-item>
-          <el-button type="primary" >登录</el-button>
-          <el-button type='primary' @click="toShow">注册</el-button>
+          <el-button type="primary" @click="checkShow">登录</el-button>
+          <el-button type="primary" @click="toShow">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
 
     <img src="../../assets/image/login_banner_ele.png" />
-    <register ref='son'></register>
+    <register ref="son"></register>
   </div>
 </template>
 <script>
@@ -63,28 +59,90 @@ import register from "@/components/register.vue";
 export default {
   name: "login",
   data() {
+    var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("手机号不能为空"));
+      } else {
+        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        if (reg.test(value)) {
+          callback();
+        } else {
+          callback(new Error("手机号不正确"));
+        }
+      }
+    };
     return {
       form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
-        checked:false
-      }
+        phone: "",
+        password: "",
+        captcha: "",
+        checked: false
+      },
+      rules: {
+        phone: [{ validator: checkPhone, trigger: "blur" }],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 6,
+            max: 18,
+            message: "密码在 6 到 18 个字符",
+            trigger: "change"
+          }
+        ],
+        captcha: [
+          //CAPTCHA
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { min: 4, max: 4, message: "验证码在 4字符", trigger: "change" }
+        ]
+      },
+      captchaUrl:process.env.VUE_APP_BASEURL+'/captcha?type=login'
     };
   },
   components: {
-     register
+    register
   },
-  methods:{
-    toShow(){
-      this.$refs.son.dialogFormVisible=true
-    }
+  methods: {
+    toShow() {
+      this.$refs.son.dialogFormVisible = true;
+    },
+    checkShow() {
+      if (!this.form.checked) {
+        this.$message.warning("用户协议没有勾上,请勾上!!!");
+      } else {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            // alert('submit!');
+            this.$message.success("登录成功了,请使用");
+          // window.console.log(this)
+           
+            this.$axios({
+              url: "/login",
+              method:'post',
+              withCredentials:true,
+              data: {
+                phone: this.form.phone,
+                password: this.form.password,
+                code: this.form.captcha
+              }
+            }).then(res=>{
+              window.console.log(res)
 
+            });
+          } else {
+            this.$message.error("很遗憾,写错了");
+            return false;
+          }
+        });
+      }
+    },
+    changCaptcha(){
+      this.captchaUrl=process.env.VUE_APP_BASEURL+"/captcha?type=login&"+Date.now()
+    }
+  },
+  created() {
+    // this.$axios('/captcha?type=login').then(res=>{
+    //   window.console.log(res)
+    // })
   }
 };
 </script>
@@ -126,7 +184,7 @@ export default {
         background: rgba(199, 199, 199, 1);
       }
       .use {
-         font-weight: 400;
+        font-weight: 400;
         font-size: 21px;
       }
     }
@@ -150,7 +208,7 @@ export default {
       }
     }
     //登录按钮
-    .el-button{
+    .el-button {
       width: 100%;
       margin: 14px 0;
     }

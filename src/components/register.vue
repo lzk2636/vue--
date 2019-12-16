@@ -1,10 +1,11 @@
 <template>
   <el-dialog title="用户注册" :visible.sync="dialogFormVisible" center width="600px">
-    <el-form :model="form">
-      <el-form-item label="用户头像">
+    <el-form :model="form" :rules="rules" status-icon ref="form">
+      <el-form-item label="用户头像" prop="avatar">
         <el-upload
           class="avatar-uploader"
-          action="https://jsonplaceholder.typicode.com/posts/"
+          name="image"
+          action="http://127.0.0.1/heimamm/public/uploads"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
@@ -14,42 +15,42 @@
         </el-upload>
       </el-form-item>
 
-      <el-form-item label="呢称" :label-width="formLabelWidth">
-        <el-input placeholder></el-input>
+      <el-form-item label="呢称" :label-width="formLabelWidth" prop="username">
+        <el-input placeholder v-model="form.username"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" :label-width="formLabelWidth">
-        <el-input placeholder></el-input>
+      <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+        <el-input placeholder v-model="form.email"></el-input>
       </el-form-item>
-      <el-form-item label="手机" :label-width="formLabelWidth">
-        <el-input placeholder></el-input>
+      <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
+        <el-input placeholder v-model="form.phone"></el-input>
       </el-form-item>
-      <el-form-item label="密码" :label-width="formLabelWidth">
-        <el-input placeholder></el-input>
+      <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+        <el-input placeholder v-model="form.password" show-password></el-input>
       </el-form-item>
       <el-row>
-        <el-col :span="18">
-          <el-form-item label="图形码" :label-width="formLabelWidth">
-            <el-input placeholder class="captcha"></el-input>
+        <el-col :span="16">
+          <el-form-item label="图形码" :label-width="formLabelWidth" prop="trode">
+            <el-input placeholder class="captcha" v-model="form.trode"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <img src="../assets/image/yanzhenma2.png" />
+        <el-col :span="6" :offset="2">
+          <img :src="tcodeUrl" width="95%" @click="changCodeUrl" />
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="18">
+        <el-col :span="16">
           <el-form-item label="验证码" :label-width="formLabelWidth">
-            <el-input placeholder class="captcha" ></el-input>
+            <el-input placeholder class="captcha" v-model="form.rcode"></el-input>
           </el-form-item>
         </el-col>
-        <el-col :span="6">
-          <el-button>获取用户验证码</el-button>
+        <el-col :span="6" :offset="2">
+          <el-button @click="sendPhone">获取用户验证码</el-button>
         </el-col>
       </el-row>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -57,30 +58,107 @@
 <script>
 export default {
   name: "register",
+
   data() {
+    // 验证手机号
+    let checkedPhone = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入手机号码"));
+      } else {
+        let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        if (reg.test(value)) {
+          // this.$refs.ruleForm.validateField('checkPass');
+          callback();
+        } else {
+          callback(new Error("手机格式不正确!!!"));
+        }
+      }
+    };
+    //验证邮箱
+    let checkEmail = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入邮箱"));
+      } else {
+        let reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+        if (!reg.test(value)) {
+          return callback(new Error("邮箱不匹配"));
+        }
+        callback();
+      }
+    };
+
     return {
       form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+        username: "",
+        phone: "",
+        avatar: "",
+        rcode: "",
+        trode: ""
       },
-      dialogTableVisible: false,
       dialogFormVisible: false,
       formLabelWidth: "60px",
-      imageUrl: ""
+      imageUrl: "",
+      //图形码
+      tcodeUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          {
+            min: 3,
+            max: 18,
+            message: "用户名长度在 3 到 18个字符",
+            trigger: "blur"
+          }
+        ],
+        phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
+        email: [{ required: true, validator: checkEmail, trigger: "blur" }],
+        avatar: [{ required: true,message:'头像不能为空',trigger:'change' }
+
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 3,
+            max: 18,
+            message: "密码长度在 3 到 18个字符",
+            trigger: "blur"
+          }
+        ],
+        trode: [
+          { message: "请输入图形码", trigger: "blur" },
+          {
+            min: 4,
+            max: 4,
+            message: "图形码4个字符",
+            trigger: "blur"
+          }
+        ]
+        // rcode: [
+        //   { message: "请输入验证码", trigger: "blur" },
+        //   {
+        //     min: 4,
+        //     max: 4,
+        //     message: "验证码4个字符",
+        //     trigger: "blur"
+        //   }
+        // ]
+      }
     };
   },
   methods: {
+    //头像上传代码
     handleAvatarSuccess(res, file) {
+      // window.console.log(res);
+      this.form.avatar = res.data.file_path;
+      // window.console.log(file);
+
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      const isJPG =
+        file.type === "image/jpeg" ||
+        file.type === "image/png" ||
+        file.type === "image/gif";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
@@ -90,62 +168,110 @@ export default {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+    //条线码点击切换事件
+    changCodeUrl() {
+      this.tcodeUrl =
+        process.env.VUE_APP_BASEURL + "/captcha?type=sendsms&" + Date.now();
+    },
+    //发送手机号获取验证码
+    sendPhone() {
+      this.$axios({
+        url: "/sendsms",
+        method: "post",
+        withCredentials: true,
+
+        data: {
+          code: this.form.trode,
+          phone: this.form.phone
+        }
+      }).then(res => {
+         window.console.log(res);
+        setTimeout(() => {
+          if (res.data.code == 200) {
+            this.form.rcode = res.data.data.captcha;
+          } else {
+            this.$message.warning("手机号/或验证码错误!!!!!");
+          }
+        }, 5000);
+      });
+    },
+    //表单提交
+    submitForm() {
+      //  window.console.log(  this.form)
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          alert("submit!");
+          //  this.form.avatar=this.imageUrl
+          this.$axios({
+            url: "/register",
+            method: "post",
+            data: this.form
+          }).then(res => {
+            if (res.data.code == 200) {
+              this.$message.success("注册成功");
+              this.dialogFormVisible = false;
+              this.$refs.form.resetFields();
+            }else{
+              this.$message.error(res.data.message)
+            }
+          });
+        } else {
+          // console.log('error submit!!');
+          this.$message.error("数据填写有错误,请重新查看");
+          return false;
+        }
+      });
+    },
+    //表单重置
+    resetForm() {
+      this.$refs.form.resetFields();
     }
   }
 };
 </script>
 
   <style lang='less'>
-//  .avatar-uploader> i#my-icon::before{
-//       position: absolute
-//   }
 .el-dialog__header {
   /* height: 53px; */
   background: linear-gradient(
-      225deg,
+    225deg,
     rgba(20, 147, 250, 1),
     rgba(1, 198, 250, 1)
   );
-  .el-dialog__title{
-   color: #fff;
-
+  .el-dialog__title {
+    color: #fff;
   }
- 
 }
-.captcha{
-    width: 80%;
+.captcha {
+  width: 80%;
 }
 
 .avatar-uploader {
   text-align: center;
   .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.el-upload:hover {
-  border-color: #409eff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  line-height: 178px;
-  text-align: center;
-  &::before{
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+    &::before {
       position: absolute;
       left: 42%;
-
+    }
   }
-
 }
-}
-
-
-
 
 .avatar {
   width: 178px;

@@ -56,6 +56,7 @@
 </template>
 <script>
 import register from "@/components/register.vue";
+import {setToken} from '@/utils/token.js'
 export default {
   name: "login",
   data() {
@@ -105,16 +106,13 @@ export default {
     toShow() {
       this.$refs.son.dialogFormVisible = true;
     },
+    //用户登录函数
     checkShow() {
       if (!this.form.checked) {
         this.$message.warning("用户协议没有勾上,请勾上!!!");
       } else {
         this.$refs.form.validate(valid => {
           if (valid) {
-            // alert('submit!');
-            this.$message.success("登录成功了,请使用");
-          // window.console.log(this)
-           
             this.$axios({
               url: "/login",
               method:'post',
@@ -125,7 +123,14 @@ export default {
                 code: this.form.captcha
               }
             }).then(res=>{
-              window.console.log(res)
+              if(res.data.code==200){
+              window.console.log(res);
+              setToken(res.data.data.token)
+              this.$router.push('/index')
+
+              }else{
+                this.$message.warning(res.data.message)
+              }
 
             });
           } else {

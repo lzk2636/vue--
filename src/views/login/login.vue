@@ -29,7 +29,7 @@
               <el-input v-model="form.captcha" prefix-icon="el-icon-key" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="6">
-              <img :src="captchaUrl" class="code" @click="changCaptcha"/>
+              <img :src="captchaUrl" class="code" @click="changCaptcha" />
             </el-col>
           </el-row>
         </el-form-item>
@@ -56,7 +56,8 @@
 </template>
 <script>
 import register from "@/components/register.vue";
-import {setToken} from '@/utils/token.js'
+import { setToken } from "@/utils/token.js";
+import { login } from "@/api/request.js";
 export default {
   name: "login",
   data() {
@@ -96,7 +97,7 @@ export default {
           { min: 4, max: 4, message: "验证码在 4字符", trigger: "change" }
         ]
       },
-      captchaUrl:process.env.VUE_APP_BASEURL+'/captcha?type=login'
+      captchaUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login"
     };
   },
   components: {
@@ -113,25 +114,18 @@ export default {
       } else {
         this.$refs.form.validate(valid => {
           if (valid) {
-            this.$axios({
-              url: "/login",
-              method:'post',
-              withCredentials:true,
-              data: {
-                phone: this.form.phone,
-                password: this.form.password,
-                code: this.form.captcha
+            login({
+                  phone: this.form.phone,
+                  password: this.form.password,
+                  code: this.form.captcha
+            }).then(res => {
+              if (res.data.code == 200) {
+                window.console.log(res);
+                setToken(res.data.data.token);
+                this.$router.push("/index");
+              } else {
+                this.$message.warning(res.data.message);
               }
-            }).then(res=>{
-              if(res.data.code==200){
-              window.console.log(res);
-              setToken(res.data.data.token)
-              this.$router.push('/index')
-
-              }else{
-                this.$message.warning(res.data.message)
-              }
-
             });
           } else {
             this.$message.error("很遗憾,写错了");
@@ -140,8 +134,9 @@ export default {
         });
       }
     },
-    changCaptcha(){
-      this.captchaUrl=process.env.VUE_APP_BASEURL+"/captcha?type=login&"+Date.now()
+    changCaptcha() {
+      this.captchaUrl =
+        process.env.VUE_APP_BASEURL + "/captcha?type=login&" + Date.now();
     }
   },
   created() {

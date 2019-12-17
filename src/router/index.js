@@ -5,6 +5,10 @@ import VueRouter from 'vue-router'
 import login from '@/views/login/login.vue'
 import index from '@/views/index/index.vue'
 import { getToken } from '@/utils/token'
+import subject from '@/views/index/subject/subject.vue';
+import enterprise from '@/views/index/enterprise/enterprise.vue';
+import user from '@/views/index/user/user.vue';
+import question from '@/views/index/question/question.vue';
 // import { Message } from 'element-ui'
 // import axiso from 'axios'
 //注册 vue-router
@@ -20,7 +24,25 @@ const router = new VueRouter({
             component: login
         }, {
             path: '/index',
-            component: index
+            component: index,
+            children: [
+                {
+                    path: "subject",
+                    component: subject
+                },
+                {
+                    path: "enterprise",
+                    component: enterprise
+                },
+                {
+                    path: "user",
+                    component: user
+                },
+                {
+                    path: "question",
+                    component: question
+                }
+            ]
         }
     ]
 })
@@ -30,7 +52,7 @@ const router = new VueRouter({
 // c. from来的路由信息
 // d. next继续执行的回调函数
 router.beforeEach((to, from, next) => {
-    window.console.log(1)
+    // window.console.log(1)
     if (to.path === '/login') {
         next()
     } else {

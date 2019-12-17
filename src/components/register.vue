@@ -29,7 +29,7 @@
       </el-form-item>
       <el-row>
         <el-col :span="16">
-          <el-form-item label="图形码" :label-width="formLabelWidth" prop="trode">
+          <el-form-item label="图形码" :label-width="formLabelWidth">
             <el-input placeholder class="captcha" v-model="form.trode"></el-input>
           </el-form-item>
         </el-col>
@@ -39,12 +39,12 @@
       </el-row>
       <el-row>
         <el-col :span="16">
-          <el-form-item label="验证码" :label-width="formLabelWidth">
+          <el-form-item label="验证码" :label-width="formLabelWidth" prop="rcode">
             <el-input placeholder class="captcha" v-model="form.rcode"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="6" :offset="2">
-          <el-button @click="sendPhone">获取用户验证码</el-button>
+          <el-button @click="sendPhone" :disabled="time!=0">{{time==0?'获取用户验证码':`还有${time}s重新获取`}}</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import { sendsms ,register} from "@/api/request.js";
 export default {
   name: "register",
 
@@ -96,7 +97,7 @@ export default {
         trode: ""
       },
       dialogFormVisible: false,
-      formLabelWidth: "60px",
+      formLabelWidth: "65px",
       imageUrl: "",
       //图形码
       tcodeUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
@@ -112,9 +113,7 @@ export default {
         ],
         phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
         email: [{ required: true, validator: checkEmail, trigger: "blur" }],
-        avatar: [{ required: true,message:'头像不能为空',trigger:'change' }
-
-        ],
+        avatar: [{ required: true, message: "头像不能为空", trigger: "blur" }],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {
@@ -124,25 +123,18 @@ export default {
             trigger: "blur"
           }
         ],
-        trode: [
-          { message: "请输入图形码", trigger: "blur" },
+
+        rcode: [
+          { message: "请输入验证码", trigger: "blur", required: true },
           {
             min: 4,
             max: 4,
-            message: "图形码4个字符",
+            message: "验证码4个字符",
             trigger: "blur"
           }
         ]
-        // rcode: [
-        //   { message: "请输入验证码", trigger: "blur" },
-        //   {
-        //     min: 4,
-        //     max: 4,
-        //     message: "验证码4个字符",
-        //     trigger: "blur"
-        //   }
-        // ]
-      }
+      },
+      time: 0
     };
   },
   methods: {
@@ -176,22 +168,31 @@ export default {
     },
     //发送手机号获取验证码
     sendPhone() {
-      this.$axios({
-        url: "/sendsms",
-        method: "post",
-        withCredentials: true,
-
-        data: {
-          code: this.form.trode,
-          phone: this.form.phone
+      const regPhone = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+      if (!regPhone.test(this.form.phone)) {
+        return this.$message.error("手机号码不正确");
+      }
+      if (this.form.trode == "" || this.form.trode.length != 4) {
+        return this.$message.error("验证码长度必须4位");
+      }
+      this.time = 60;
+      const timeId = setInterval(() => {
+        this.time--;
+        if (this.time == 0) {
+          clearInterval(timeId);
         }
+      }, 1000);
+
+      sendsms({
+        code: this.form.trode,
+        phone: this.form.phone
       }).then(res => {
-         window.console.log(res);
+        window.console.log(res);
         setTimeout(() => {
           if (res.data.code == 200) {
             this.form.rcode = res.data.data.captcha;
           } else {
-            this.$message.warning("手机号/或验证码错误!!!!!");
+            this.$message.warning("手机号或验证码错误!!!!!");
           }
         }, 5000);
       });
@@ -201,19 +202,13 @@ export default {
       //  window.console.log(  this.form)
       this.$refs.form.validate(valid => {
         if (valid) {
-          alert("submit!");
-          //  this.form.avatar=this.imageUrl
-          this.$axios({
-            url: "/register",
-            method: "post",
-            data: this.form
-          }).then(res => {
+          register(this.form).then(res => {
             if (res.data.code == 200) {
               this.$message.success("注册成功");
               this.dialogFormVisible = false;
               this.$refs.form.resetFields();
-            }else{
-              this.$message.error(res.data.message)
+            } else {
+              this.$message.error(res.data.message);
             }
           });
         } else {
@@ -231,7 +226,7 @@ export default {
 };
 </script>
 
-  <style lang='less'>
+<style lang='less'>
 .el-dialog__header {
   /* height: 53px; */
   background: linear-gradient(

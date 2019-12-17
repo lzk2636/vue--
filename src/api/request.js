@@ -4,7 +4,6 @@ import axios from 'axios'
 const instance = axios.create({
     baseURL: process.env.VUE_APP_BASEURL,
     withCredentials:true,
-
 });
 //登录接口
 export function login(data) {

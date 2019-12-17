@@ -8,9 +8,9 @@
         <span class="title">黑马面面</span>
       </div>
       <div class="right">
-        <img class="usericon" src="../../assets/image/user-icon.png" />
-        <span class="username">利达,你好</span>
-        <el-button type="primary" size="small">退出</el-button>
+        <img class="usericon" :src="$store.state.userInfo.avatar" />
+        <span class="username">{{$store.state.userInfo.username}},你好</span>
+        <el-button type="primary" size="small" @click="logout">退出</el-button>
       </div>
     </el-header>
     <el-container class="index-bottom">
@@ -48,11 +48,62 @@
 </template>
 
 <script>
+import {  removeToken } from "@/utils/token";
+import { logoutUser } from "../../api/user";
 export default {
   data() {
     return {
       isCollapse: false
     };
+  },
+  methods: {
+    //退出登录
+    logout() {
+      this.$confirm("你确认退出登录", "友情提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "success"
+      })
+        .then(() => {
+          logoutUser().then(res => {
+            window.console.log(res)
+            if(res.data.code===200){
+              this.$message({
+                message: "退出登录",
+                type: "error"
+              });
+              removeToken();
+              this.$store.state.userInfo={}
+              this.$router.push('/login')            
+
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            message: "不退出",
+            type: "success"
+            // showClose: true,
+          });
+        });
+    }
+  },
+  beforeCreate() {
+    // if (!getToken()) {
+    //   this.$message.error("重新登录");
+    //   this.$route.push("/login");
+    // }
+  },
+  created() {
+    // userInfo().then(res => {
+    //   if (res.data.code === 200) {
+    //   window.console.log(res);
+    //   } else if (res.data.code === 206) {
+    //     this.$message.error("toke 错误不能伪造");
+    //     removeToken();
+    //     this.$route.push("/login");
+    //   }
+    // });
   }
 };
 </script>
@@ -100,7 +151,7 @@ export default {
   }
   .index-bottom {
     height: 100%;
-    .el-main{
+    .el-main {
       padding: 0;
     }
     .el-menu-vertical-demo:not(.el-menu--collapse) {

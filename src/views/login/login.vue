@@ -140,9 +140,7 @@ export default {
     }
   },
   created() {
-    // this.$axios('/captcha?type=login').then(res=>{
-    //   window.console.log(res)
-    // })
+    // window.console.log(this.$store.state)
   }
 };
 </script>

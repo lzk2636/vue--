@@ -12,7 +12,7 @@ export function setToken(value){
 }
 //获取token
 export function getToken(){
-    window.console.log(key)
+    // window.console.log(key)
     return window.localStorage.getItem(key)
 }
 //移除

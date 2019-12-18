@@ -1,75 +1,153 @@
 <template>
-  <el-dialog title="新增用户" :visible.sync="dialogFormVisible" center>
-    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm">
-      <el-form-item label="用户名" :label-width="formLabelWidth" prop="xkbh">
-        <el-input v-model="xkForm.xkbh" class="aStyle" autocomplete="off"></el-input>
+  <el-dialog :title="title" :visible.sync="dialogFormVisible" center>
+    <el-form :model="userForm" :rules="userRules" ref="userForm" style="width:477px">
+      <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+        <el-input v-model="userForm.username" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="邮箱" :label-width="formLabelWidth" prop="xkmv">
-        <el-input v-model="xkForm.xkmv" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+        <el-input v-model="userForm.email" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="电话" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkjc" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
+        <el-input v-model="userForm.phone" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="角色" :label-width="formLabelWidth">
-        <el-select v-model="xkForm.xkjc" placeholder="选择角色">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+      <el-form-item label="角色" :label-width="formLabelWidth" prop="role_id">
+        <el-select v-model="userForm.role_id" placeholder="选择角色">
+          <el-option label="数学" value="1"></el-option>
+          <el-option label="管理员" value="2"></el-option>
+          <el-option label="老师" value="3"></el-option>
+          <el-option label="学生" value="4"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="状态" :label-width="formLabelWidth">
-        <el-select v-model="xkForm.xkjc" placeholder="选择状态">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+        <el-select v-model="userForm.status" placeholder="选择状态">
+          <el-option label="开启" value="1"></el-option>
+          <el-option label="禁用" value="0"></el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="用户备注" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkbz" class="aStyle" autocomplete="off"></el-input>
+        <el-input v-model="userForm.remark" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      <el-button @click="resetForm">取 消</el-button>
+      <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import { addUser ,editUser} from "@/api/user";
 export default {
   data() {
+    // 验证手机号
+    let checkedPhone = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入手机号码"));
+      } else {
+        let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+        if (reg.test(value)) {
+          // this.$refs.ruleForm.validateField('checkPass');
+          callback();
+        } else {
+          callback(new Error("手机格式不正确!!!"));
+        }
+      }
+    };
+    //验证邮箱
+    let checkEmail = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入邮箱"));
+      } else {
+        let reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+        if (!reg.test(value)) {
+          return callback(new Error("邮箱不匹配"));
+        }
+        callback();
+      }
+    };
+
     return {
+      title: "新增用户",
       dialogFormVisible: false,
-      xkForm: {
-        //学科编号
-        xkbh: "",
-        //学科名称
-        xkmc: "",
-        //学校简称
-        xkjc: "",
-        //学科简介
-        xkjj: "",
-        //学科备注
-        xkbz: ""
+      id: "",
+      userForm: {
+        //用户名
+        username: "",
+        //邮箱
+        email: "",
+        //手机号
+        phone: "",
+        password: "123456",
+        //角色
+        role_id: "",
+        //状态
+        status: "",
+        remark: ""
       },
       formLabelWidth: "80px",
-      xkFormRules: {
-        xkbh: [
-          { required: true, message: "请输入学科编号", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+      userRules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 2, max: 8, message: "长度在 2 到 8 个字符", trigger: "blur" }
         ],
-        xkmv: [
-          { required: true, message: "请输入学科名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+        phone: [{ required: true, validator: checkedPhone, trigger: "blur" }],
+        email: [{ required: true, validator: checkEmail, trigger: "blur" }],
+        role_id: [
+          { required: true, message: "请选择状态", trigger: "change" },
+          { max: 1, min: 1, message: "状态值为1位数字", trigger: "change" }
         ]
       }
     };
-  }
+  },
+  methods: {
+    submitForm() {
+      //  window.console.log(  this.form)
+      this.$refs.userForm.validate(valid => {
+        if (valid) {
+          //新增用户
+          if(this.id==''){
+            addUser(this.userForm).then(res => {
+              window.console.log(res);
+              if (res.data.code == 200) {
+                this.$message.success("提交成功");
+                this.dialogFormVisible = false;
+                this.$parent.search();
+              } else {
+                this.$message.error("提交失败");
+              }
+            });
+            
+          }else{
+            this.userForm.id=(this.id);
+            editUser(this.userForm).then(res=>{
+              window.console.log(res)
+            })
+          }
+        } else {
+          // console.log('error submit!!');
+          this.$message.error("数据填写有错误,请重新查看");
+          return false;
+        }
+      });
+    },
+    //表单重置
+    resetForm() {
+      this.dialogFormVisible = false;
+
+      this.$refs.userForm.resetFields();
+    }
+  },
+  created() {},
+ 
+    
+ 
 };
 </script>
 
 <style lang="less">
 .el-dialog__wrapper {
-  .el-dialog--center {
+  .el-el-dialog--center--center {
     width: 477px;
 
     .el-dialog__header {
@@ -85,7 +163,7 @@ export default {
         }
       }
     }
-    .dialog-footer{
+    .dialog-footer {
       text-align: right;
     }
   }

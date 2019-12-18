@@ -1,58 +1,101 @@
 <template>
-  <el-dialog title="新增学科" :visible.sync="dialogFormVisible" center>
-    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm">
-      <el-form-item label="学科编号" :label-width="formLabelWidth" prop="xkbh">
-        <el-input v-model="xkForm.xkbh" class="aStyle" autocomplete="off"></el-input>
+  <el-dialog :title="title" :visible.sync="dialogFormVisible" center>
+    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm" style="width:540px">
+      <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
+        <el-input v-model="xkForm.rid" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="学科名称" :label-width="formLabelWidth" prop="xkmv">
-        <el-input v-model="xkForm.xkmv" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
+        <el-input v-model="xkForm.name" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="学科简称" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkjc" class="aStyle" autocomplete="off"></el-input>
+        <el-input v-model="xkForm.short_name" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="学科简介" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkjj" class="aStyle" autocomplete="off"></el-input>
+        <el-input v-model="xkForm.intro" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="学科备注" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkbz" class="aStyle" autocomplete="off"></el-input>
+        <el-input v-model="xkForm.remark" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      <el-button @click="resetForm">取 消</el-button>
+      <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import { addSubject, editSubject } from "@/api/subject";
 export default {
   data() {
     return {
+      id: "",
+      title: "添加学科",
       dialogFormVisible: false,
       xkForm: {
         //学科编号
-        xkbh: "",
+        rid: "",
         //学科名称
-        xkmc: "",
+        name: "",
+        creater: "管理人",
         //学校简称
-        xkjc: "",
+        short_name: "",
+        //创建时间
+        create_time:new Date(),
+        //更新时间
+        update_time:new Date(),
         //学科简介
-        xkjj: "",
+        intro: "",
         //学科备注
-        xkbz: ""
+        remark: ""
       },
       formLabelWidth: "80px",
       xkFormRules: {
-        xkbh: [
+        rid: [
           { required: true, message: "请输入学科编号", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" }
         ],
-          xkmv: [
+        name: [
           { required: true, message: "请输入学科名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" }
         ]
       }
     };
+  },
+  methods: {
+    submitForm() {
+      //  window.console.log(  this.form)
+      this.$refs.xkForm.validate(valid => {
+        if (valid) {
+          if (this.id == "") {
+            addSubject(this.xkForm).then(res => {
+              window.console.log(res);
+              if (res.data.code === 200) {
+                this.dialogFormVisible = false;
+                this.$refs.xkForm.resetFields();
+                this.$parent.search();
+                this.$message.success("新增成功");
+              }
+            });
+          } else {
+            this.xkForm.id=this.id
+            editSubject(this.xkForm).then(res=>{
+              window.console.log(res)
+            })
+          }
+        } else {
+          // console.log('error submit!!');
+          this.$message.error("数据填写有错误,请重新查看");
+          return false;
+        }
+      });
+    },
+    //表单重置
+    resetForm() {
+      this.dialogFormVisible = false;
+
+      this.$refs.xkForm.resetFields();
+    }
   }
 };
 </script>

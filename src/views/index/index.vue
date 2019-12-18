@@ -16,7 +16,7 @@
     <el-container class="index-bottom">
       <!-- 侧栏菜单 -->
       <el-aside width="auto">
-        <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <el-menu :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
           <el-menu-item index="1">
             <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>

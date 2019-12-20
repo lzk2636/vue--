@@ -2,13 +2,13 @@
   <div class="container">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item label="企业编号">
-        <el-input v-model="formInline.eid" class="Awidth" ></el-input>
+        <el-input v-model="formInline.eid" class="Awidth"></el-input>
       </el-form-item>
       <el-form-item label="企业名称">
-        <el-input v-model="formInline.name" class="Bwidth" ></el-input>
+        <el-input v-model="formInline.name" class="Bwidth"></el-input>
       </el-form-item>
       <el-form-item label="创建者">
-        <el-input v-model="formInline.username" class="Awidth" ></el-input>
+        <el-input v-model="formInline.username" class="Awidth"></el-input>
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="formInline.status" placeholder="选择状态" class="Bwidth">
@@ -30,26 +30,21 @@
       <el-table-column label="简称" prop="short_name"></el-table-column>
       <el-table-column label="创建者" prop="username"></el-table-column>
       <el-table-column label="创建者日期">
-        <template slot-scope="scope">
-          {{scope.row.create_time | filterTimes}}
-
-        </template>
-      
+        <template slot-scope="scope">{{scope.row.create_time | filterTimes}}</template>
       </el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-        
-        <el-link type="primary" size="small" v-if="scope.row.status==1">启用</el-link>
-        <el-link type="danger" size="small" v-else >禁用</el-link>
-            
-       
+          <el-link type="primary" size="small" v-if="scope.row.status==1">启用</el-link>
+          <el-link type="danger" size="small" v-else>禁用</el-link>
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <template >
+        <template slot-scope="scope">
           <el-button type="text" size="small">编辑</el-button>
-          <el-button type="text" size="small">禁用</el-button>
-          <el-button type="text" size="small">删除</el-button>
+          <el-button type="text" size="small">
+            {{scope.row.status==1?'禁用':'启用'}}
+            </el-button>
+          <el-button type="text" size="small" @click="romoveData(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -69,7 +64,7 @@
 
 <script>
 import addenterprise from "@/components/addenterprise.vue";
-import { enterpriseList } from "@/api/enterprise";
+import { enterpriseList, enterpriseDelete } from "@/api/enterprise";
 export default {
   name: "enterprise",
   components: {
@@ -78,18 +73,16 @@ export default {
   data() {
     return {
       formInline: {
-        eid:'',
-        name:'',
-        username:'',
-        status:''
+        eid: "",
+        name: "",
+        username: "",
+        status: ""
       },
-      tableData: [ ],
+      tableData: [],
       currentPage: 4,
-      total:0,
-      limit:5,
-      pageSizes:[5, 6, 8, 10],
-
-
+      total: 0,
+      limit: 5,
+      pageSizes: [5, 6, 8, 10]
     };
   },
   methods: {
@@ -99,53 +92,70 @@ export default {
     //分页功能
     handleSizeChange(size) {
       // window.console.log(`每页 ${size} 条`);
-      this.limit=size
-      this.search()
+      this.limit = size;
+      this.search();
     },
     handleCurrentChange(page) {
       // window.console.log(`当前页: ${page}`);
-      this.currentPage=page;
-      this.search()
+      this.currentPage = page;
+      this.search();
     },
     //条件查询
-    searcher(){
-      this.currentPage=1;
-      this.search()
+    searcher() {
+      this.currentPage = 1;
+      this.search();
     },
     search() {
-      enterpriseList({
-        page:this.currentPage,
-        limit:this.limit,
-        ...this.formInline
-      }
+      enterpriseList(
+        {
+          page: this.currentPage,
+          limit: this.limit,
+          ...this.formInline
+        }
         // his.formInline
-        ).then(res => {
+      ).then(res => {
         // window.console.log(res)
-        if(res.data.code===200){
-
-          this.tableData=res.data.data.items
-          this.currentPage=Number(res.data.data.pagination.page);
-          this.total=res.data.data.pagination.total
+        if (res.data.code === 200) {
+          this.tableData = res.data.data.items;
+          this.currentPage = Number(res.data.data.pagination.page);
+          this.total = res.data.data.pagination.total;
         }
       });
     },
     //清除数据
-    clearData(){
+    clearData() {
       for (const key in this.formInline) {
-       this.formInline[key]=''
-       this.search()
+        this.formInline[key] = "";
+        this.search();
       }
+    },
+    //删除数据
+    romoveData(data) {
+      window.console.log(data);
+      this.$confirm("你确认删除这条:" + data.name, "温馨提示!!!!", {
+        confirmButtonText: "确认",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        enterpriseDelete(data.id).then(res => {
+          if (res.data.code === 200) {
+            this.$message.success("删除数据成功");
+            this.search();
+          } else {
+            this.$message.error("删除数据失败");
+          }
+        });
+      });
     }
   },
   created() {
     this.search();
   },
   filters: {
-    filterTimes:function(time){
-     
-      return time.split(" ")[0]
+    filterTimes: function(time) {
+      return time.split(" ")[0];
     }
-  },
+  }
 };
 </script>
 

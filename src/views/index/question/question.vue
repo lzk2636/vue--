@@ -1,29 +1,29 @@
 <template>
   <div class="container">
-    <el-form :inline="true" :model="formInline" class="demo-ruleForm">
+    <el-form :inline="true" :model="questionForm" class="demo-ruleForm" >
       <el-card class="box-card">
         <el-row>
           <el-col :span="24">
             <el-form-item label="学科">
-              <el-select v-model="formInline.region" placeholder="请选择学科">
+              <el-select v-model="questionForm.region" placeholder="请选择学科">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="阶段">
-              <el-select v-model="formInline.region" placeholder="请选择阶段">
+              <el-select v-model="questionForm.region" placeholder="请选择阶段">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="企业">
-              <el-select v-model="formInline.region" placeholder="请选择企业">
+              <el-select v-model="questionForm.region" placeholder="请选择企业">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="题型">
-              <el-select v-model="formInline.region" placeholder="请选择题型">
+              <el-select v-model="questionForm.region" placeholder="请选择题型">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
@@ -34,22 +34,22 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="难度">
-              <el-select v-model="formInline.region" placeholder="请选择难度">
+              <el-select v-model="questionForm.region" placeholder="请选择难度">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="作者">
-              <el-input v-model="formInline.user" class="authorWidth"></el-input>
+              <el-input v-model="questionForm.user" class="authorWidth"></el-input>
             </el-form-item>
             <el-form-item label="状态">
-              <el-select v-model="formInline.region" placeholder="请选择状态">
+              <el-select v-model="questionForm.region" placeholder="请选择状态">
                 <el-option label="区域一" value="shanghai"></el-option>
                 <el-option label="区域二" value="beijing"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="日期">
-              <el-input v-model="formInline.user"></el-input>
+              <el-input v-model="questionForm.user"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -57,7 +57,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="标题">
-              <el-input v-model="formInline.user" class="title_width"></el-input>
+              <el-input v-model="questionForm.user" class="title_width"></el-input>
             </el-form-item>
 
             <el-form-item>
@@ -89,6 +89,8 @@
 
 <script>
 import addquestion from '@/components/addquestion.vue'
+
+
 export default {
   name: "question",
   components:{
@@ -97,13 +99,16 @@ export default {
   },
   data() {
     return {
-      formInline: {
+      questionForm: {
         user: "",
         region: ""
       },
       tableData: []
     };
-  }
+  },
+  methods: {
+    
+  },
 };
 </script>
 

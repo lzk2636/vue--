@@ -1,132 +1,155 @@
 <template>
   <div class="mian-container">
     <el-dialog title="新增题库测试" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="学科" :label-width="formLabelWidth" class="quest_width">
-          <el-select v-model="form.region" placeholder="请选择学科">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+      <el-form :model="addquestform" :rules="addquestformRules" ref="addquestform">
+        <el-form-item label="学科" :label-width="formLabelWidth" prop="subject" class="quest_width">
+          <el-select v-model="addquestform.subject" placeholder="请选择学科">
+            <el-option
+              :label="item.name"
+              :value="item.id"
+              v-for="(item, index) in subjectList"
+              :key="index"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="阶段" :label-width="formLabelWidth" class="quest_width">
-          <el-select v-model="form.region" placeholder="请选择阶段">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        <el-form-item label="阶段" prop="step" :label-width="formLabelWidth" class="quest_width">
+          <el-select v-model="addquestform.step" placeholder="请选择阶段">
+            <el-option
+              :label="item.label"
+              :value="item.value"
+              v-for="(item, index) in stepOptions"
+              :key="index"
+            ></el-option>
+            <!-- <el-option label="区域二" value="beijing"></el-option> -->
           </el-select>
         </el-form-item>
-        <el-form-item label="企业" :label-width="formLabelWidth" class="quest_width">
-          <el-select v-model="form.region" placeholder="请选择阶段">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        <el-form-item
+          label="企业"
+          prop="enterprise"
+          :label-width="formLabelWidth"
+          class="quest_width"
+        >
+          <el-select v-model="addquestform.enterprise" placeholder="请选择阶段">
+            <el-option
+              :label="item.name"
+              :value="item.id"
+              v-for="(item, index) in enterpriseList"
+              :key="index"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="企业" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择企业"  class="quest_width">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>-->
-        <el-form-item label="城市" :label-width="formLabelWidth" class="quest_width">
-          <el-select v-model="form.region" placeholder="请选择城市">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+
+        <el-form-item label="城市" prop="city" :label-width="formLabelWidth" class="quest_width">
+          <el-select v-model="addquestform.city" placeholder="请选择城市" multiple>
+            <el-option label="深圳" value="深圳"></el-option>
+            <el-option label="上海" value="上海"></el-option>
+            <el-option label="天津" value="天津"></el-option>
+            <el-option label="珠海" value="珠海"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="题型" :label-width="formLabelWidth" class="quest_width">
-           
-          <el-radio v-model="radio" label="1">单选</el-radio>
-          <el-radio v-model="radio" label="2">多选</el-radio>
-          <el-radio v-model="radio" label="3">简答</el-radio>
+        <el-form-item label="题型" prop="type" :label-width="formLabelWidth" class="quest_width">
+          <el-radio v-model="addquestform.type" label="1">单选</el-radio>
+          <el-radio v-model="addquestform.type" label="2">多选</el-radio>
+          <el-radio v-model="addquestform.type" label="3">简答</el-radio>
         </el-form-item>
-        <el-form-item label="难度" :label-width="formLabelWidth" class="quest_width">
-          <el-radio v-model="radio" label="1">简单</el-radio>
-          <el-radio v-model="radio" label="2">一般</el-radio>
-          <el-radio v-model="radio" label="3">困难</el-radio>
+        <el-form-item
+          label="难度"
+          prop="difficulty"
+          :label-width="formLabelWidth"
+          class="quest_width"
+        >
+          <el-radio v-model="addquestform.difficulty" label="1">简单</el-radio>
+          <el-radio v-model="addquestform.difficulty" label="2">一般</el-radio>
+          <el-radio v-model="addquestform.difficulty" label="3">困难</el-radio>
         </el-form-item>
         <el-divider></el-divider>
-        <el-form-item label="试题标题" :label-width="formLabelWidth">
+        <el-form-item label="试题标题" :label-width="formLabelWidth" prop="title">
           <br />
-          <div id="editor">
-            <p>
-              欢迎使用
-              <b>wangEditor</b> 富文本编辑器
-            </p>
-          </div>
+          <editor-bar v-model="addquestform.title" :isClear="isClear" @change="change"></editor-bar>
         </el-form-item>
         <br />
         <!-- 内容2 -->
-        <el-form-item label="单选" :label-width="formLabelWidth" class="content_upload">
+        <el-form-item
+          label="单选"
+          :label-width="formLabelWidth"
+          class="content_upload"
+          prop="select_options"
+        >
           <br />
           <br />
           <br />
           <el-row>
             <el-col :span="12">
-              <el-radio v-model="radio" label="1">A</el-radio>
-              <el-input width="476px"></el-input>
+              <el-radio v-model="addquestform.select_options[0].label" label="A">A</el-radio>
+              <el-input width="476px" v-model="addquestform.select_options[0].text"></el-input>
             </el-col>
             <el-col :span="11" :offset="1">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="http://127.0.0.1/heimamm/public/question/upload"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
+                name="file"
+                :on-success="handleAvatarSuccessA"
                 :before-upload="beforeAvatarUpload"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <img v-if="imageUrlA" :src="imageUrlA" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-radio v-model="radio" label="1">B</el-radio>
-              <el-input width="476px"></el-input>
+              <el-radio v-model="addquestform.select_options[1].label" label="B">B</el-radio>
+              <el-input width="476px" v-model="addquestform.select_options[1].text"></el-input>
             </el-col>
             <el-col :span="11" :offset="1">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="http://127.0.0.1/heimamm/public/question/upload"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
+                name="file"
+                :on-success="handleAvatarSuccessB"
                 :before-upload="beforeAvatarUpload"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <img v-if="imageUrlB" :src="imageUrlB" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-radio v-model="radio" label="1">C</el-radio>
-              <el-input width="476px"></el-input>
+              <el-radio v-model="addquestform.select_options[2].label" label="C">C</el-radio>
+              <el-input width="476px" v-model="addquestform.select_options[2].text"></el-input>
             </el-col>
             <el-col :span="11" :offset="1">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="http://127.0.0.1/heimamm/public/question/upload"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
+                name="file"
+                :on-success="handleAvatarSuccessC"
                 :before-upload="beforeAvatarUpload"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <img v-if="imageUrlC" :src="imageUrlC" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-radio v-model="radio" label="1">D</el-radio>
-              <el-input width="476px"></el-input>
+              <el-radio v-model="addquestform.select_options[3].label" label="D">D</el-radio>
+              <el-input width="476px" v-model="addquestform.select_options[3].text"></el-input>
             </el-col>
             <el-col :span="11" :offset="1">
               <el-upload
                 class="avatar-uploader"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                action="http://127.0.0.1/heimamm/public/question/upload"
                 :show-file-list="false"
-                :on-success="handleAvatarSuccess"
+                name="file"
+                :on-success="handleAvatarSuccessD"
                 :before-upload="beforeAvatarUpload"
               >
-                <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                <img v-if="imageUrlD" :src="imageUrlD" class="avatar" />
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-col>
@@ -136,10 +159,12 @@
         <el-form-item label="视屏解析" :label-width="formLabelWidth">
           <el-upload
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
+            action="http://127.0.0.1/heimamm/public/question/upload"
+           
+            :on-success="handleAudioSuccess"
+          
             :before-remove="beforeRemove"
+            name="file"
             multiple
             :limit="3"
             :on-exceed="handleExceed"
@@ -150,58 +175,176 @@
           </el-upload>
         </el-form-item>
         <el-divider></el-divider>
-        <el-form-item label="答案解析" :label-width="formLabelWidth">
+        <el-form-item label="答案解析" :label-width="formLabelWidth" prop="answer_analyze">
           <br />
-          <div id="editor">
-            <p>
-              欢迎使用
-              <b>wangEditor</b> 富文本编辑器
-            </p>
-          </div>
+          <editor-bar v-model="addquestform.answer_analyze" :isClear="isClear" @change="change"></editor-bar>
         </el-form-item>
         <el-divider></el-divider>
-        <el-form-item label="试题备注" :label-width="formLabelWidth">
+        <el-form-item label="试题备注" :label-width="formLabelWidth" prop="remark">
           <br />
-          <el-input style="width:754px;"></el-input>
+          <el-input style="width:754px;" v-model="addquestform.remark"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button @click="resetForm">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import EditorBar from "@/components/wangEnduit";
+import { subjectList } from "@/api/subject";
+import { enterpriseList } from "@/api/enterprise";
+import { questionAdd } from "@/api/question";
+
 export default {
   name: "addquestion",
   data() {
     return {
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: ""
+      addquestform: {
+        //newData
+        title: "",
+        subject: "",
+        step: "",
+        enterprise: "",
+        city: [],
+        type: "",
+        difficulty: "",
+        video: "",
+        answer_analyze: "",
+        single_select_answer: "A",
+        multiple_select_answer: [],
+        select_options: [
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          }
+        ]
       },
-      radio: "",
+
       formLabelWidth: "280px",
       dialogFormVisible: true,
-      imageUrl: "",
-      fileList: []
+      imageUrlA: "",
+      imageUrlB: "",
+      imageUrlC: "",
+      imageUrlD: "",
+
+      fileList: [],
+
+      // 富文本编辑器
+      isClear: false,
+      detail: "",
+      //学科subject的列表
+      subjectList: [],
+      //   阶段
+      stepOptions: [
+        { label: "初级", value: "1" },
+        { label: "中级", value: "2" },
+        { label: "高级", value: "3" }
+      ],
+      //企业id标识
+      enterpriseList: [],
+      //绑定规则
+      addquestformRules: {
+        title: [{ required: true, message: "标题不能为空", trigger: "blur" }],
+        subject: [{ required: true, message: "学科不能为空", trigger: "blur" }],
+        step: [{ required: true, message: "阶段不能为空", trigger: "blur" }],
+        enterprise: [
+          { required: true, message: "企业不能为空", trigger: "blur" }
+        ],
+        city: [{ required: true, message: "城市不能为空", trigger: "blur" }],
+        type: [{ required: true, message: "题型不能为空", trigger: "blur" }],
+        difficulty: [
+          { required: true, message: "难度不能为空", trigger: "blur" }
+        ],
+        vidieo: [
+          { required: true, message: "视屏地址不能为空", trigger: "blur" }
+        ],
+        answer_analyze: [
+          { required: true, message: "答案解析不能为空", trigger: "blur" }
+        ],
+        remark: [
+          { required: true, message: "答案备注不能为空", trigger: "blur" }
+        ],
+        select_options: [
+          { required: true, message: "选项不能为空", trigger: "blur" }
+        ]
+      }
     };
   },
+  components: {
+    EditorBar
+  },
   methods: {
-    // 图像上传
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
+    //表单提交
+    submitForm() {
+      this.$refs.addquestform.validate(valid => {
+        if (valid) {
+          window.alert("submit!");
+          questionAdd(this.addquestform).then(res => {
+            //   window.console.log(res)
+            if (res.data.code === 200) {
+              this.$message.success("题目发布成功!!");
+              this.dialogFormVisible = false;
+            }
+          });
+        } else {
+          window.console.log("error submit!!");
+          return false;
+        }
+      });
     },
+    resetForm() {
+      this.$refs.addquestform.resetFields();
+      this.dialogFormVisible = false;
+    },
+
+    // 图像上传A
+    handleAvatarSuccessA(res, file) {
+      window.console.log(res);
+      this.addquestform.select_options[0].image = res.data.url;
+      this.imageUrlA = URL.createObjectURL(file.raw);
+     
+    },
+    // 图像上传B
+    handleAvatarSuccessB(res, file) {
+      this.addquestform.select_options[1].image = res.data.url;
+      this.imageUrlB = URL.createObjectURL(file.raw);
+     
+    },
+    // 图像上传C
+    handleAvatarSuccessC(res, file) {
+      this.addquestform.select_options[2].image = res.data.url;
+      this.imageUrlC = URL.createObjectURL(file.raw);
+     
+    },
+    // 图像上传D
+    handleAvatarSuccessD(res, file) {
+      this.addquestform.select_options[3].image = res.data.url;
+      this.imageUrlD = URL.createObjectURL(file.raw);
+     
+    },
+
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
+      const isJPG = file.type === "image/jpeg"||file.type==="image/png" ||file.type==="image/gif";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
@@ -212,24 +355,43 @@ export default {
       }
       return isJPG && isLt2M;
     },
+
+    //文件上传成功
+    handleAudioSuccess(res) {
+      this.addquestform.video = res.data.url;
+    },
     //文件上传
-    beforeRemove(file, fileList) {
-      window.console.log(file, fileList);
+    beforeRemove(file) {//文件列表移除文件时的钩子
+    //   window.console.log(file, fileList);
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-    handleRemove(file, fileList) {
-      window.console.log(file, fileList);
-    },
-    handlePreview(file) {
-      window.console.log(file);
-    },
+  
+    //文件超出限制
     handleExceed(files, fileList) {
       this.$message.warning(
         `当前限制选择 3 个文件，本次选择了 ${
           files.length
         } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
+    },
+    //富文本编辑器
+    change(val) {
+      window.console.log(val);
     }
+  },
+  created() {
+    subjectList().then(res => {
+      if (res.data.code === 200) {
+        window.console.log(res);
+        this.subjectList = res.data.data.items;
+      }
+    });
+    //enterpriseList
+    enterpriseList().then(res => {
+      if (res.data.code === 200) {
+        this.enterpriseList = res.data.data.items;
+      }
+    });
   }
 };
 </script>
@@ -245,21 +407,21 @@ export default {
         .el-form-item {
           .el-select {
             width: 364px;
+            margin-left: 50px;
           }
         }
-        .quest_width{
-            width: 600px;
+        .quest_width {
+          width: 600px;
         }
-        .content_upload{
-            .el-row{
-                display: flex;
-                align-items: center;
-                .el-col-12{
-                    display: flex;
-                     align-items: center;
-                }
-
+        .content_upload {
+          .el-row {
+            display: flex;
+            align-items: center;
+            .el-col-12 {
+              display: flex;
+              align-items: center;
             }
+          }
         }
       }
     }

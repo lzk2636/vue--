@@ -8,7 +8,7 @@
         <el-input v-model="formInline.name" class="Bwidth" ></el-input>
       </el-form-item>
       <el-form-item label="创建者">
-        <el-input v-model="formInline.usename" class="Awidth" ></el-input>
+        <el-input v-model="formInline.username" class="Awidth" ></el-input>
       </el-form-item>
       <el-form-item label="状态">
         <el-select v-model="formInline.status" placeholder="选择状态" class="Bwidth">
@@ -18,8 +18,8 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="search">搜索</el-button>
-        <el-button>清除</el-button>
+        <el-button type="primary" @click="searcher">搜索</el-button>
+        <el-button @click="clearData">清除</el-button>
         <el-button type="primary" @click="addenterprise" class="el-icon-plus">新增企业</el-button>
       </el-form-item>
     </el-form>
@@ -71,7 +71,7 @@
 import addenterprise from "@/components/addenterprise.vue";
 import { enterpriseList } from "@/api/enterprise";
 export default {
-  name: "subject",
+  name: "enterprise",
   components: {
     addenterprise
   },
@@ -97,25 +97,30 @@ export default {
       this.$refs.addenterprise.dialogFormVisible = true;
     },
     //分页功能
-    handleSizeChange(page) {
-      window.console.log(`每页 ${page} 条`);
-      this.limit=page
+    handleSizeChange(size) {
+      // window.console.log(`每页 ${size} 条`);
+      this.limit=size
       this.search()
     },
     handleCurrentChange(page) {
       // window.console.log(`当前页: ${page}`);
-      this.page=page;
+      this.currentPage=page;
+      this.search()
+    },
+    //条件查询
+    searcher(){
+      this.currentPage=1;
       this.search()
     },
     search() {
       enterpriseList({
-        page:this.page,
+        page:this.currentPage,
         limit:this.limit,
         ...this.formInline
       }
         // his.formInline
         ).then(res => {
-        window.console.log(res)
+        // window.console.log(res)
         if(res.data.code===200){
 
           this.tableData=res.data.data.items
@@ -123,6 +128,13 @@ export default {
           this.total=res.data.data.pagination.total
         }
       });
+    },
+    //清除数据
+    clearData(){
+      for (const key in this.formInline) {
+       this.formInline[key]=''
+       this.search()
+      }
     }
   },
   created() {

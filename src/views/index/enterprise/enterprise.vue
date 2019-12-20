@@ -41,9 +41,11 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button type="text" size="small">编辑</el-button>
-          <el-button type="text" size="small">
-            {{scope.row.status==1?'禁用':'启用'}}
-            </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="setStatus(scope.row)"
+          >{{scope.row.status==1?'禁用':'启用'}}</el-button>
           <el-button type="text" size="small" @click="romoveData(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -64,7 +66,7 @@
 
 <script>
 import addenterprise from "@/components/addenterprise.vue";
-import { enterpriseList, enterpriseDelete } from "@/api/enterprise";
+import { enterpriseList, enterpriseDelete,enterpriseStatus } from "@/api/enterprise";
 export default {
   name: "enterprise",
   components: {
@@ -145,6 +147,15 @@ export default {
             this.$message.error("删除数据失败");
           }
         });
+      });
+    },
+    //设置状态
+    setStatus(data) {
+      enterpriseStatus(data.id).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success("状态设置成功");
+          this.search()
+        }
       });
     }
   },

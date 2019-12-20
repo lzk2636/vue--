@@ -37,9 +37,9 @@ export function enterpriseEdit(data) {
 //企业状态//
 export function enterpriseStatus(id) {
     return instance({
-        url: "enterprise/edit",
+        url: "enterprise/status",
         method: 'post',
-        dataid:{
+        data:{
             id
         }
     })

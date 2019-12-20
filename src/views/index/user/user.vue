@@ -2,7 +2,7 @@
   <div class="container">
     <el-form :inline="true" :model="formInline" class="demo-form-inline">
       <el-form-item label="用户名称">
-        <el-input v-model="formInline.user_name" class="Awidth" placeholder></el-input>
+        <el-input v-model="formInline.username" class="Awidth" placeholder></el-input>
       </el-form-item>
       <el-form-item label="用户邮箱">
         <el-input v-model="formInline.email" class="Bwidth" placeholder></el-input>
@@ -18,18 +18,13 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="search">搜索</el-button>
+        <el-button type="primary" @click="searchs">搜索</el-button>
         <el-button @click="clear">清除</el-button>
-        <el-button type="primary" @click="adduser">+新建用户</el-button>
+        <el-button type="primary" @click="adduser" class="el-icon-plus">新建用户</el-button>
       </el-form-item>
     </el-form>
     <el-table :data="tableData" class="my-table" border height="600px">
-      <el-table-column label="序号" width="60">
-        <template slot-scope="scope">
-          <!-- <i class="el-icon-time"></i> -->
-          <span style="margin-left: 10px">{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="序号" width="60" type="index"></el-table-column>
       <el-table-column label="用户名" width="180" prop="username"></el-table-column>
       <el-table-column label="电话" prop="phone"></el-table-column>
       <el-table-column label="邮箱" prop="email"></el-table-column>
@@ -37,16 +32,13 @@
       <el-table-column label="备注" prop="remark"></el-table-column>
       <el-table-column label="状态" prop="status">
         <template slot-scope="scope">
-       
-          <el-link v-if=" scope.row.status==1">启用</el-link>
-          <el-link type="danger" v-if=" scope.row.status==0">禁用</el-link>
-         
+          <el-link v-if="scope.row.status==1">启用</el-link>
+          <el-link type="danger" v-else>禁用</el-link>
         </template>
-     
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="editUser(scope.row.id)">编辑</el-button>
+          <el-button type="text" size="small" @click="editUser(scope.row)">编辑</el-button>
           <el-button
             type="text"
             size="small"
@@ -68,8 +60,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="currentPage4"
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size="10"
+      :page-sizes="pageSizes"
+      :page-size="limit"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
@@ -90,62 +82,73 @@ export default {
     return {
       total: 0,
       formInline: {
-        user_name: "",
+        username: "",
         email: "",
-        role_id: "",
-        page: 1,
-        limit: 10
+        role_id: ""
+        // page: 1,
+        // limit: 10
       },
+      page: 1,
+      limit: 5,
       tableData: [],
-      currentPage4: 4
+      pageSizes: [5, 10],
+      pageSize: 5,
+      currentPage4: 1
     };
   },
   methods: {
     adduser() {
-      this.$refs.adduser.id = "";
+      // this.$refs.adduser.id = "";
+      this.$refs.adduser.userForm = {
+
+        password:'123456'
+      };
+      this.$refs.adduser.seleted ="";
+      this.$refs.adduser.statusSelected ="";
       this.$refs.adduser.title = "新增用户";
       this.$refs.adduser.dialogFormVisible = true;
     },
     //分页功能
-    handleSizeChange(val) {
-      window.console.log(`每页 ${val} 条`);
+    handleSizeChange(size) {
+      // window.console.log(`每页 ${val} 条`);
+      this.limit = size;
+      this.search();
     },
-    handleCurrentChange(val) {
-      // window.console.log(`当前页: ${val}`);
-      this.formInline.page = val;
+    handleCurrentChange(page) {
+      // window.console.log(`当前页: ${page}`);
+      this.page = page;
+      this.search();
+    },
+    //条件查询
+    searchs() {
+      this.page = 1;
       this.search();
     },
     //查询用户
     search() {
-      // window.console.log(this.formInline);
-      this.tableData = [];
-      userList(this.formInline).then(res => {
+      userList({
+        page: this.page,
+        limit: this.limit,
+        ...this.formInline
+      }).then(res => {
         this.currentPage4 = Number(res.data.data.pagination.page);
         this.total = res.data.data.pagination.total;
-
-        res.data.data.items.forEach(element => {
-          //  let status=status==0?'开启':'禁用' 	1(启用)0(禁用)
-          this.tableData.push({
-            id: element.id,
-            username: element.username,
-            phone: element.phone,
-            role: element.role,
-            remark: element.remark,
-            email: element.email,
-            status: element.status
-          });
-        });
+        this.tableData = res.data.data.items;
       });
     },
     //清空列表函数
     clear() {
-      this.formInline.user_name = this.formInline.email = this.formInline.role_id =
-        "";
+      for (const key in this.formInline) {
+        this.formInline[key] = "";
+      }
       this.search();
     },
-    editUser(id) {
-      window.console.log(id);
-      this.$refs.adduser.id = id;
+    editUser(data) {
+      // window.console.log(id);
+      // this.$refs.adduser.id = id;
+      this.$refs.adduser.userForm = data;
+      this.$refs.adduser.seleted = data.role_id + "";
+      this.$refs.adduser.statusSelected = data.status + "";
       this.$refs.adduser.title = "编辑用户";
       this.$refs.adduser.dialogFormVisible = true;
     },
@@ -172,36 +175,24 @@ export default {
     },
     //设置用户状态
     setStatus(id) {
-      changeStatus(id).then(res=>{
-        if(res.data.code===200){
-          this.$message.success("状态设置成功")
-          this.search()
-        }else{
-           this.$message.error("状态设置失败")
+      changeStatus(id).then(res => {
+        if (res.data.code === 200) {
+          this.$message.success("状态设置成功");
+          this.search();
+        } else {
+          this.$message.error("状态设置失败");
         }
-      })
+      });
     }
   },
   created() {
-    userList().then(res => {
-      // window.console.log(res);
-      this.currentPage4 = res.data.data.pagination.page;
-      this.total = res.data.data.pagination.total;
-
-      res.data.data.items.forEach(element => {
-        //  let status=status==0?'开启':'禁用' 	1(启用)0(禁用)
-        this.tableData.push({
-          id: element.id,
-          username: element.username,
-          phone: element.phone,
-          role: element.role,
-          remark: element.remark,
-          email: element.email,
-          status: element.status
-        });
-      });
-      // res.data.data.items
-    });
+    this.search();
+    // userList().then(res => {
+    //   // window.console.log(res);
+    //   this.currentPage4 = res.data.data.pagination.page;
+    //   this.total = res.data.data.pagination.total;
+    //   this.tableData = res.data.data.items;
+    // });
   }
 };
 </script>

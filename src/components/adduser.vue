@@ -10,18 +10,16 @@
       <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
         <el-input v-model="userForm.phone" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="角色" :label-width="formLabelWidth" prop="role_id">
-        <el-select v-model="userForm.role_id" placeholder="选择角色">
-          <el-option label="数学" value="1"></el-option>
-          <el-option label="管理员" value="2"></el-option>
-          <el-option label="老师" value="3"></el-option>
-          <el-option label="学生" value="4"></el-option>
+      <el-form-item label="角色" :label-width="formLabelWidth" prop="seleted">
+        <el-select v-model="seleted" placeholder="选择角色">
+          <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value"></el-option>
+         
         </el-select>
       </el-form-item>
       <el-form-item label="状态" :label-width="formLabelWidth">
-        <el-select v-model="userForm.status" placeholder="选择状态">
-          <el-option label="开启" value="1"></el-option>
-          <el-option label="禁用" value="0"></el-option>
+        <el-select v-model="statusSelected" placeholder="选择状态">
+          <el-option :label="item.label" :value="item.value" v-for="(item, index) in statusOption" :key="index" ></el-option>
+         
         </el-select>
       </el-form-item>
 
@@ -37,7 +35,7 @@
 </template>
 
 <script>
-import { addUser ,editUser} from "@/api/user";
+import { addUser, editUser } from "@/api/user";
 export default {
   data() {
     // 验证手机号
@@ -97,7 +95,42 @@ export default {
           { required: true, message: "请选择状态", trigger: "change" },
           { max: 1, min: 1, message: "状态值为1位数字", trigger: "change" }
         ]
-      }
+      },
+
+      //角色选项
+      options: [
+        {
+          value: "1",
+          label: "超级管理员"
+        },
+        {
+          value: "2",
+          label: "管理员"
+        },
+        {
+          value: "3",
+          label: "老师"
+        },
+         {
+          value: "4",
+          label: "学生"
+        }
+      ],
+      seleted:"2",
+      //状态选项
+      statusOption:[
+        {
+          label:"开启",
+          value:"1"
+
+        },
+        {
+          label:"禁用",
+          value:"0"
+          
+        }
+      ],
+      statusSelected:"1"
     };
   },
   methods: {
@@ -106,23 +139,28 @@ export default {
       this.$refs.userForm.validate(valid => {
         if (valid) {
           //新增用户
-          if(this.id==''){
+          if (!this.userForm.id) {
+            this.userForm.role_id=this.seleted;
             addUser(this.userForm).then(res => {
               window.console.log(res);
               if (res.data.code == 200) {
                 this.$message.success("提交成功");
                 this.dialogFormVisible = false;
                 this.$parent.search();
-              } else {
-                this.$message.error("提交失败");
+              } else if(res.data.code==201) {
+                this.$message.error(res.data.message);
               }
             });
-            
-          }else{
-            this.userForm.id=(this.id);
-            editUser(this.userForm).then(res=>{
-              window.console.log(res)
-            })
+          } else {
+            this.userForm.role_id=this.seleted;
+            editUser(this.userForm).then(res => {
+              // window.console.log(res)
+              if (res.data.code === 200) {
+                this.$message.success("设置成功!!!");
+                this.$parent.search()
+                 this.dialogFormVisible = false;
+              }
+            });
           }
         } else {
           // console.log('error submit!!');
@@ -138,10 +176,8 @@ export default {
       this.$refs.userForm.resetFields();
     }
   },
-  created() {},
- 
-    
- 
+  created() {
+  }
 };
 </script>
 

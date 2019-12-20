@@ -6,8 +6,13 @@ Vue.use(VueX);
 
 const store=new VueX.Store({
     state:{
-        time:new Date()
+        
 
+    },
+    mutations:{
+        getUserInfo(state,data){
+            state.userInfo=data
+        }
     }
 })
 

@@ -1,6 +1,7 @@
 <template>
-  <el-dialog title="新增企业" :visible.sync="dialogFormVisible" center>
-    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm">
+<!-- <div  class="my-dialog"> -->
+  <el-dialog title="新增企业" :visible.sync="dialogFormVisible" center >
+    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm" style="width: 550px;" >
       <el-form-item label="企业编号" :label-width="formLabelWidth" prop="xkbh">
         <el-input v-model="xkForm.xkbh" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
@@ -22,6 +23,7 @@
       <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
     </div>
   </el-dialog>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -58,21 +60,26 @@ export default {
 </script>
 
 <style lang="less">
-.el-dialog__wrapper {
-  .el-dialog--center {
-    width: 600px;
+.my-dialog {
+  .el-dialog {
+    .el-dialog__wrapper {
+      .el-dialog--center {
+        width: 600px;
 
-    .el-dialog__header {
-      text-align: center;
-      padding-top: 13px;
-      background: linear-gradient(to right, #01c4fa, #109bfa);
-      .el-dialog__title {
-        color: #fff;
-      }
-      .el-dialog__headerbtn {
-        .el-dialog__close {
-          color: #fff;
+        .el-dialog__header {
+          text-align: center;
+          padding-top: 13px;
+          background: linear-gradient(to right, #01c4fa, #109bfa);
+          .el-dialog__title {
+            color: #fff;
+          }
+          .el-dialog__headerbtn {
+            .el-dialog__close {
+              color: #fff;
+            }
+          }
         }
+        
       }
     }
   }

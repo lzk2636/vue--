@@ -36,8 +36,7 @@ export default {
         //学科编号
         rid: "",
         //学科名称
-        name: "",
-        creater: "管理人",
+        name: "",     
         //学校简称
         short_name: "",
         //创建时间
@@ -52,12 +51,12 @@ export default {
       formLabelWidth: "80px",
       xkFormRules: {
         rid: [
-          { required: true, message: "请输入学科编号", trigger: "blur" },
-          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" }
+          { required: true, message: "学科编号不能为空", trigger: "blur" },
+         
         ],
         name: [
-          { required: true, message: "请输入学科名称", trigger: "blur" },
-          { min: 3, max: 8, message: "长度在 3 到 8 个字符", trigger: "blur" }
+          { required: true, message: "学科名称不能为空", trigger: "blur" },
+       
         ]
       }
     };
@@ -67,20 +66,28 @@ export default {
       //  window.console.log(  this.form)
       this.$refs.xkForm.validate(valid => {
         if (valid) {
-          if (this.id == "") {
+          if (!this.xkForm.id) {
             addSubject(this.xkForm).then(res => {
-              window.console.log(res);
+              // window.console.log(res);
               if (res.data.code === 200) {
                 this.dialogFormVisible = false;
                 this.$refs.xkForm.resetFields();
                 this.$parent.search();
                 this.$message.success("新增成功");
+              }else if(res.data.code===201){
+                this.$message.error("学科编号已经存在了")
               }
             });
           } else {
-            this.xkForm.id=this.id
             editSubject(this.xkForm).then(res=>{
-              window.console.log(res)
+               if (res.data.code === 200) {
+                this.dialogFormVisible = false;
+                this.$refs.xkForm.resetFields();
+                this.$parent.search();
+                this.$message.success("修改成功");
+              }else if(res.data.code===201){
+                this.$message.error("学科编号已经存在了")
+              }
             })
           }
         } else {

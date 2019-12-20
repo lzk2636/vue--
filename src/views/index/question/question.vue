@@ -63,7 +63,7 @@
             <el-form-item>
               <el-button type="primary">搜索</el-button>
               <el-button>清除</el-button>
-              <el-button type="primary">+新增试题</el-button>
+              <el-button type="primary" class="el-icon-plus">新增试题</el-button>
             </el-form-item>
           </el-col>
         </el-row>

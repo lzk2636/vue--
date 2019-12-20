@@ -68,8 +68,11 @@ router.beforeEach((to, from, next) => {
                     //vuex 存储数据 Vuex 可以帮助我们管理共享状态，并附带了更多的概念和框架。这需要对短期和长期效益进行权衡。
 
                     window.console.log(res);
-                    store.state.userInfo=res.data.data;
-                    store.state.userInfo.avatar=process.env.VUE_APP_BASEURL+store.state.userInfo.avatar
+                    // store.state.userInfo=res.data.data;
+                    // store.state.userInfo.avatar=process.env.VUE_APP_BASEURL+store.state.userInfo.avatar
+
+                    res.data.data.avatar=process.env.VUE_APP_BASEURL+res.data.data.avatar
+                    store.commit('getUserInfo', res.data.data)
 
                     next()
                 } else if (res.data.code === 206) {

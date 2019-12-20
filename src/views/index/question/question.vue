@@ -40,7 +40,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="作者">
-              <el-input v-model="formInline.user"></el-input>
+              <el-input v-model="formInline.user" class="authorWidth"></el-input>
             </el-form-item>
             <el-form-item label="状态">
               <el-select v-model="formInline.region" placeholder="请选择状态">
@@ -57,7 +57,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="标题">
-              <el-input v-model="formInline.user"></el-input>
+              <el-input v-model="formInline.user" class="title_width"></el-input>
             </el-form-item>
 
             <el-form-item>
@@ -83,12 +83,18 @@
         <el-table-column prop label="操作"></el-table-column>
       </el-table>
     </el-card>
+    <addquestion></addquestion>
   </div>
 </template>
 
 <script>
+import addquestion from '@/components/addquestion.vue'
 export default {
   name: "question",
+  components:{
+    addquestion
+
+  },
   data() {
     return {
       formInline: {
@@ -116,6 +122,12 @@ export default {
       // justify-content: space-between;
       .el-col {
         text-align: left;
+        .authorWidth{
+          width: 219px;
+        }
+        .title_width{
+          width: 388px;
+        }
       }
     }
   }
@@ -123,8 +135,7 @@ export default {
     width: 1191px;
     margin: 0 auto;
 
-    .el-table {
-    }
+
   }
 }
 </style>

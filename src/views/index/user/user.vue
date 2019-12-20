@@ -146,7 +146,7 @@ export default {
     editUser(data) {
       // window.console.log(id);
       // this.$refs.adduser.id = id;
-      this.$refs.adduser.userForm = data;
+      this.$refs.adduser.userForm = JSON.parse(JSON.stringify(data));
       this.$refs.adduser.seleted = data.role_id + "";
       this.$refs.adduser.statusSelected = data.status + "";
       this.$refs.adduser.title = "编辑用户";

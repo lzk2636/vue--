@@ -1,60 +1,93 @@
 <template>
-<!-- <div  class="my-dialog"> -->
-  <el-dialog title="新增企业" :visible.sync="dialogFormVisible" center >
-    <el-form :model="xkForm" :rules="xkFormRules" ref="xkForm" style="width: 550px;" >
-      <el-form-item label="企业编号" :label-width="formLabelWidth" prop="xkbh">
-        <el-input v-model="xkForm.xkbh" class="aStyle" autocomplete="off"></el-input>
+  <!-- <div  class="my-dialog"> -->
+  <el-dialog title="新增企业" :visible.sync="dialogFormVisible" center>
+    <el-form
+      :model="enterpriseForm"
+      :rules="enterpriseFormRules"
+      ref="enterpriseForm"
+      style="width: 550px;"
+    >
+      <el-form-item label="企业编号" :label-width="formLabelWidth" prop="eid">
+        <el-input v-model="enterpriseForm.eid" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="企业名称" :label-width="formLabelWidth" prop="xkmv">
-        <el-input v-model="xkForm.xkmv" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="企业名称" :label-width="formLabelWidth" prop="name">
+        <el-input v-model="enterpriseForm.name" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="企业简称" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkjc" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="企业简称" :label-width="formLabelWidth" prop="short_name">
+        <el-input v-model="enterpriseForm.short_name" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="企业简介" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkjj" class="aStyle" autocomplete="off"></el-input>
+      <el-form-item label="企业简介" :label-width="formLabelWidth" prop="intro">
+        <el-input v-model="enterpriseForm.intro" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="企业备注" :label-width="formLabelWidth">
-        <el-input v-model="xkForm.xkbz" class="aStyle" autocomplete="off"></el-input>
+        <el-input v-model="enterpriseForm.remark" class="aStyle" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      <el-button @click="resetForm">取 消</el-button>
+      <el-button type="primary" @click="submitForm">确 定</el-button>
     </div>
   </el-dialog>
   <!-- </div> -->
 </template>
 
 <script>
+import { enterpriseAdd } from "@/api/enterprise.js";
 export default {
   data() {
     return {
       dialogFormVisible: false,
-      xkForm: {
-        //学科编号
-        xkbh: "",
-        //学科名称
-        xkmc: "",
-        //学校简称
-        xkjc: "",
-        //学科简介
-        xkjj: "",
-        //学科备注
-        xkbz: ""
+      enterpriseForm: {
+        eid: "",
+        name: "",
+        short_name: "",
+        intro: "",
+        remark: ""
       },
       formLabelWidth: "80px",
-      xkFormRules: {
-        xkbh: [
-          { required: true, message: "请输入学科编号", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+      enterpriseFormRules: {
+        eid: [{ required: true, message: "企业编号不能为空", trigger: "blur" }],
+        name: [
+          { required: true, message: "企业名称不能为空", trigger: "blur" }
         ],
-        xkmv: [
-          { required: true, message: "请输入学科名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 8 个字符", trigger: "blur" }
+        short_name: [
+          { required: true, message: "企业简称不能为空", trigger: "blur" }
+        ],
+        intro: [
+          { required: true, message: "企业简介不能为空", trigger: "blur" }
         ]
       }
     };
+  },
+  methods: {
+    submitForm() {
+      //  window.console.log(  this.form)
+      this.$refs.enterpriseForm.validate(valid => {
+        if (valid) {
+          //添加数据
+          enterpriseAdd(this.enterpriseForm).then(res => {
+            if (res.data.code === 200) {
+              this.$message.success("表单提交成功");
+              this.dialogFormVisible = false;
+                this.$refs.enterpriseForm.resetFields();
+              this.$parent.search();
+            }else if(res.data.code===201){
+              this.$message.error("企业编号已经存在")
+            }
+          });
+        } else {
+          // console.log('error submit!!');
+          this.$message.error("数据填写有错误,请重新查看");
+          return false;
+        }
+      });
+    },
+    //表单重置
+    resetForm() {
+      this.dialogFormVisible = false;
+
+      this.$refs.enterpriseForm.resetFields();
+    }
   }
 };
 </script>
@@ -79,7 +112,6 @@ export default {
             }
           }
         }
-        
       }
     }
   }

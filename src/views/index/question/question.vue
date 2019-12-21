@@ -218,6 +218,7 @@ export default {
       this.$refs.addquestion.dialogFormVisible = true;
       this.$refs.addquestion.title = "新增题库测试";
        this.$refs.addquestion.addquestform={
+          city: [],
           select_options: [
           {
             label: "",
@@ -240,7 +241,7 @@ export default {
             image: ""
           }
         ],
-          city: [],
+         
         multiple_select_answer: [],
        }
 

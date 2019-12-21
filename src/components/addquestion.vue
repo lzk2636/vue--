@@ -46,6 +46,7 @@
             <el-option label="天津" value="天津"></el-option>
             <el-option label="珠海" value="珠海"></el-option>
           </el-select>
+         
         </el-form-item>
         <el-form-item label="题型" prop="type" :label-width="formLabelWidth" class="quest_width">
           <el-radio v-model="addquestform.type" label="1">单选</el-radio>
@@ -65,7 +66,7 @@
         <el-divider></el-divider>
         <el-form-item label="试题标题" :label-width="formLabelWidth" prop="title">
           <br />
-          <editor-bar v-model="addquestform.title" :isClear="isClear" ></editor-bar>
+          <editor-bar v-model="addquestform.title" :isClear="isClear"></editor-bar>
         </el-form-item>
         <br />
         <!-- 内容2 -->
@@ -160,9 +161,7 @@
           <el-upload
             class="upload-demo"
             action="http://127.0.0.1/heimamm/public/question/upload"
-           
             :on-success="handleAudioSuccess"
-          
             :before-remove="beforeRemove"
             name="file"
             multiple
@@ -177,7 +176,7 @@
         <el-divider></el-divider>
         <el-form-item label="答案解析" :label-width="formLabelWidth" prop="answer_analyze">
           <br />
-          <editor-bar v-model="addquestform.answer_analyze" :isClear="isClear" ></editor-bar>
+          <editor-bar v-model="addquestform.answer_analyze" :isClear="isClear"></editor-bar>
         </el-form-item>
         <el-divider></el-divider>
         <el-form-item label="试题备注" :label-width="formLabelWidth" prop="remark">
@@ -197,13 +196,14 @@
 import EditorBar from "@/components/wangEnduit";
 import { subjectList } from "@/api/subject";
 import { enterpriseList } from "@/api/enterprise";
-import { questionAdd ,questionEdit} from "@/api/question";
+import { questionAdd, questionEdit } from "@/api/question";
+// import VDistpicker from "v-distpicker";
 
 export default {
   name: "addquestion",
   data() {
     return {
-      title:"新增题库测试",
+      title: "新增题库测试",
       addquestform: {
         //newData
         title: "",
@@ -292,36 +292,45 @@ export default {
     };
   },
   components: {
-    EditorBar
+    EditorBar,
+    // VDistpicker
   },
   methods: {
+    // onchangeAera(v) {
+    //   this.addquestform.city.push(v.value);
+    // },
+    // onchangePrvoince(v) {
+    //   this.addquestform.city.push(v.value);
+    // },
+    // onchangeCity(v) {
+    //   this.addquestform.city.push(v.value);
+    // },
+
     //表单提交
     submitForm() {
       this.$refs.addquestform.validate(valid => {
         if (valid) {
-        //   window.alert("submit!");
-        if(!this.addquestform.id){
-          questionAdd(this.addquestform).then(res => {
-            //   window.console.log(res)
-            if (res.data.code === 200) {
-              this.$message.success("题目发布成功!!");
-              this.dialogFormVisible = false;
-              this.$refs.addquestform.resetFields()
-              this.$parent.search()
-            }
-          });
-
-        }else{
-          questionEdit(this.addquestform).then(res=>{
-             if (res.data.code === 200) {
-              this.$message.success("题目修改成功!!");
-              this.dialogFormVisible = false;
-              this.$refs.addquestform.resetFields()
-              this.$parent.search()
-            }
-          })
-
-        }
+          //   window.alert("submit!");
+          if (!this.addquestform.id) {
+            questionAdd(this.addquestform).then(res => {
+              //   window.console.log(res)
+              if (res.data.code === 200) {
+                this.$message.success("题目发布成功!!");
+                this.dialogFormVisible = false;
+                this.$refs.addquestform.resetFields();
+                this.$parent.search();
+              }
+            });
+          } else {
+            questionEdit(this.addquestform).then(res => {
+              if (res.data.code === 200) {
+                this.$message.success("题目修改成功!!");
+                this.dialogFormVisible = false;
+                this.$refs.addquestform.resetFields();
+                this.$parent.search();
+              }
+            });
+          }
         } else {
           window.console.log("error submit!!");
           return false;
@@ -338,29 +347,28 @@ export default {
       window.console.log(res);
       this.addquestform.select_options[0].image = res.data.url;
       this.imageUrlA = URL.createObjectURL(file.raw);
-     
     },
     // 图像上传B
     handleAvatarSuccessB(res, file) {
       this.addquestform.select_options[1].image = res.data.url;
       this.imageUrlB = URL.createObjectURL(file.raw);
-     
     },
     // 图像上传C
     handleAvatarSuccessC(res, file) {
       this.addquestform.select_options[2].image = res.data.url;
       this.imageUrlC = URL.createObjectURL(file.raw);
-     
     },
     // 图像上传D
     handleAvatarSuccessD(res, file) {
       this.addquestform.select_options[3].image = res.data.url;
       this.imageUrlD = URL.createObjectURL(file.raw);
-     
     },
 
     beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg"||file.type==="image/png" ||file.type==="image/gif";
+      const isJPG =
+        file.type === "image/jpeg" ||
+        file.type === "image/png" ||
+        file.type === "image/gif";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
@@ -377,11 +385,12 @@ export default {
       this.addquestform.video = res.data.url;
     },
     //文件上传
-    beforeRemove(file) {//文件列表移除文件时的钩子
-    //   window.console.log(file, fileList);
+    beforeRemove(file) {
+      //文件列表移除文件时的钩子
+      //   window.console.log(file, fileList);
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-  
+
     //文件超出限制
     handleExceed(files, fileList) {
       this.$message.warning(
@@ -389,7 +398,7 @@ export default {
           files.length
         } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
-    },
+    }
     // //富文本编辑器
     // change(val) {
     //   window.console.log(val);

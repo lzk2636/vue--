@@ -65,7 +65,7 @@
         <el-divider></el-divider>
         <el-form-item label="试题标题" :label-width="formLabelWidth" prop="title">
           <br />
-          <editor-bar v-model="addquestform.title" :isClear="isClear" @change="change"></editor-bar>
+          <editor-bar v-model="addquestform.title" :isClear="isClear" ></editor-bar>
         </el-form-item>
         <br />
         <!-- 内容2 -->
@@ -177,7 +177,7 @@
         <el-divider></el-divider>
         <el-form-item label="答案解析" :label-width="formLabelWidth" prop="answer_analyze">
           <br />
-          <editor-bar v-model="addquestform.answer_analyze" :isClear="isClear" @change="change"></editor-bar>
+          <editor-bar v-model="addquestform.answer_analyze" :isClear="isClear" ></editor-bar>
         </el-form-item>
         <el-divider></el-divider>
         <el-form-item label="试题备注" :label-width="formLabelWidth" prop="remark">
@@ -304,6 +304,8 @@ export default {
             if (res.data.code === 200) {
               this.$message.success("题目发布成功!!");
               this.dialogFormVisible = false;
+              this.$refs.addquestform.resetFields()
+              this.$parent.search()
             }
           });
         } else {
@@ -374,10 +376,10 @@ export default {
         } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
     },
-    //富文本编辑器
-    change(val) {
-      window.console.log(val);
-    }
+    // //富文本编辑器
+    // change(val) {
+    //   window.console.log(val);
+    // }
   },
   created() {
     subjectList().then(res => {

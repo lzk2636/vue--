@@ -115,7 +115,7 @@
         <el-table-column prop label="操作" width="180">
           <template class="mybutton" slot-scope="scope">
             <el-button type="text">编辑</el-button>
-            <el-button type="text">启用</el-button>
+            <el-button type="text" @click="setStatus(scope.row)">{{scope.row.status===1?'禁用':'启用'}}</el-button>
             <el-button type="text" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -137,7 +137,7 @@
 
 <script>
 import addquestion from "@/components/addquestion.vue";
-import { questionList,questionRemove} from "@/api/question";
+import { questionList,questionRemove,questionStatus} from "@/api/question";
 import { subjectList } from "@/api/subject";
 import { enterpriseList } from "@/api/enterprise";
 export default {
@@ -170,6 +170,19 @@ export default {
     };
   },
   methods: {
+    //设置题目状态
+    // questionStatus
+    setStatus(item){
+      questionStatus(item.id).then(res=>{
+        if(res.data.code===200){
+          this.$message({
+            message: '状态修改成功!!!',
+            type: 'success'
+          });
+          this.search()
+        }
+      })
+    },
     //删除数据
     remove(item){
       this.$confirm('你真的要删除这条'+item.subject_name, '溫馨提示', {

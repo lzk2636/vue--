@@ -241,7 +241,7 @@ export default {
       },
 
       formLabelWidth: "280px",
-      dialogFormVisible: true,
+      dialogFormVisible: false,
       imageUrlA: "",
       imageUrlB: "",
       imageUrlC: "",
@@ -298,7 +298,7 @@ export default {
     submitForm() {
       this.$refs.addquestform.validate(valid => {
         if (valid) {
-          window.alert("submit!");
+        //   window.alert("submit!");
           questionAdd(this.addquestform).then(res => {
             //   window.console.log(res)
             if (res.data.code === 200) {
@@ -348,7 +348,7 @@ export default {
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
-        this.$message.error("上传头像图片只能是 JPG 格式!");
+        this.$message.error("上传头像图片只能是 JPG,png,gif 格式!");
       }
       if (!isLt2M) {
         this.$message.error("上传头像图片大小不能超过 2MB!");

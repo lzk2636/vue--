@@ -6,8 +6,12 @@
           <el-col :span="24">
             <el-form-item label="学科">
               <el-select v-model="questionForm.subject" placeholder="请选择学科">
-                <el-option :label="item.name" :value="item.id" v-for="(item, index) in subjectList" :key="index"></el-option>
-              
+                <el-option
+                  :label="item.name"
+                  :value="item.id"
+                  v-for="(item, index) in subjectList"
+                  :key="index"
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="阶段">
@@ -19,8 +23,12 @@
             </el-form-item>
             <el-form-item label="企业">
               <el-select v-model="questionForm.enterprise" placeholder="请选择企业">
-                <el-option :label="item.name" :value="item.id" v-for="(item, index) in enterpriseList" :key="index"></el-option>
-               
+                <el-option
+                  :label="item.name"
+                  :value="item.id"
+                  v-for="(item, index) in enterpriseList"
+                  :key="index"
+                ></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="题型">
@@ -57,7 +65,7 @@
               <!-- <el-input v-model="questionForm.create_data"></el-input> -->
               <div class="block">
                 <!-- <span class="demonstration">默认</span> -->
-                <el-date-picker v-model="questionForm.create_data" type="date" placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="questionForm.create_date" type="date" placeholder="选择日期"></el-date-picker>
               </div>
             </el-form-item>
           </el-col>
@@ -70,7 +78,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary">搜索</el-button>
+              <el-button type="primary" @click="searcher">搜索</el-button>
               <el-button>清除</el-button>
               <el-button type="primary" class="el-icon-plus" @click="addquestion">新增试题</el-button>
             </el-form-item>
@@ -145,7 +153,10 @@ export default {
         type: "",
         username: "",
         status: "",
-        create_date: ""
+        create_date: "",
+        enterprise: "",
+        difficulty: "",
+        step: ""
       },
       tableData: [],
       page: 0,
@@ -153,34 +164,47 @@ export default {
       limit: 6,
       total: 0,
       //学科列表
-      subjectList:[],
+      subjectList: [],
       //企业列表
-      enterpriseList:[]
-
+      enterpriseList: []
     };
   },
   methods: {
     addquestion() {
       this.$refs.addquestion.dialogFormVisible = true;
     },
-    handleSizeChange(val) {
-      window.console.log(`每页 ${val} 条`);
+    handleSizeChange(size) {
+      this.limit = size;
+      this.search();
+      // window.console.log(`每页 ${val} 条`);
     },
-    handleCurrentChange(val) {
-      window.console.log(`当前页: ${val}`);
+    handleCurrentChange(page) {
+      this.page = page;
+      this.search();
+    },
+    search() {
+      questionList({
+        limit: this.limit,
+        page: this.page,
+        ...this.questionForm
+      }).then(res => {
+        // window.console.log(res);
+        if (res.data.code === 200) {
+          this.tableData = res.data.data.items;
+          this.page = Number(res.data.data.pagination.page);
+          this.total = res.data.data.pagination.total;
+        }
+      });
+    },
+    searcher() {
+      this.page = 1;
+      this.search();
     }
   },
   created() {
-    questionList().then(res => {
-      window.console.log(res);
-      if (res.data.code === 200) {
-        this.tableData = res.data.data.items;
-        this.page = res.data.data.pagination.page;
-        this.total = res.data.data.pagination.total;
-      }
-    });
+    this.search();
     //初始化数据
-     subjectList().then(res => {
+    subjectList().then(res => {
       if (res.data.code === 200) {
         window.console.log(res);
         this.subjectList = res.data.data.items;

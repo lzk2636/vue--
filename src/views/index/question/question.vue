@@ -114,7 +114,7 @@
         <el-table-column prop="reads" label="访问量"></el-table-column>
         <el-table-column prop label="操作" width="180">
           <template class="mybutton" slot-scope="scope">
-            <el-button type="text">编辑</el-button>
+            <el-button type="text" @click="setEdit(scope.row)">编辑</el-button>
             <el-button type="text" @click="setStatus(scope.row)">{{scope.row.status===1?'禁用':'启用'}}</el-button>
             <el-button type="text" @click="remove(scope.row)">删除</el-button>
           </template>
@@ -170,6 +170,12 @@ export default {
     };
   },
   methods: {
+    //编辑题目
+    setEdit(item){
+      this.$refs.addquestion.title="编辑题目测试"
+      this.$refs.addquestion.dialogFormVisible=true;
+      this.$refs.addquestion.addquestform=JSON.parse(JSON.stringify(item))
+    },
     //设置题目状态
     // questionStatus
     setStatus(item){
@@ -210,6 +216,34 @@ export default {
     },
     addquestion() {
       this.$refs.addquestion.dialogFormVisible = true;
+      this.$refs.addquestion.title = "新增题库测试";
+       this.$refs.addquestion.addquestform={
+          select_options: [
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          },
+          {
+            label: "",
+            text: "",
+            image: ""
+          }
+        ],
+          city: [],
+        multiple_select_answer: [],
+       }
+
     },
     handleSizeChange(size) {
       this.limit = size;

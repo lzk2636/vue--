@@ -1,6 +1,6 @@
 <template>
   <div class="mian-container">
-    <el-dialog title="新增题库测试" :visible.sync="dialogFormVisible">
+    <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="addquestform" :rules="addquestformRules" ref="addquestform">
         <el-form-item label="学科" :label-width="formLabelWidth" prop="subject" class="quest_width">
           <el-select v-model="addquestform.subject" placeholder="请选择学科">
@@ -197,12 +197,13 @@
 import EditorBar from "@/components/wangEnduit";
 import { subjectList } from "@/api/subject";
 import { enterpriseList } from "@/api/enterprise";
-import { questionAdd } from "@/api/question";
+import { questionAdd ,questionEdit} from "@/api/question";
 
 export default {
   name: "addquestion",
   data() {
     return {
+      title:"新增题库测试",
       addquestform: {
         //newData
         title: "",
@@ -210,12 +211,12 @@ export default {
         step: "",
         enterprise: "",
         city: [],
+        multiple_select_answer: [],
         type: "",
         difficulty: "",
         video: "",
         answer_analyze: "",
         single_select_answer: "A",
-        multiple_select_answer: [],
         select_options: [
           {
             label: "",
@@ -299,6 +300,7 @@ export default {
       this.$refs.addquestform.validate(valid => {
         if (valid) {
         //   window.alert("submit!");
+        if(!this.addquestform.id){
           questionAdd(this.addquestform).then(res => {
             //   window.console.log(res)
             if (res.data.code === 200) {
@@ -308,6 +310,18 @@ export default {
               this.$parent.search()
             }
           });
+
+        }else{
+          questionEdit(this.addquestform).then(res=>{
+             if (res.data.code === 200) {
+              this.$message.success("题目修改成功!!");
+              this.dialogFormVisible = false;
+              this.$refs.addquestform.resetFields()
+              this.$parent.search()
+            }
+          })
+
+        }
         } else {
           window.console.log("error submit!!");
           return false;

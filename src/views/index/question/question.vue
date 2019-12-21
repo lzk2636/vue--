@@ -79,7 +79,7 @@
 
             <el-form-item>
               <el-button type="primary" @click="searcher">搜索</el-button>
-              <el-button>清除</el-button>
+              <el-button @click="clearData">清除</el-button>
               <el-button type="primary" class="el-icon-plus" @click="addquestion">新增试题</el-button>
             </el-form-item>
           </el-col>
@@ -113,10 +113,10 @@
         </el-table-column>
         <el-table-column prop="reads" label="访问量"></el-table-column>
         <el-table-column prop label="操作" width="180">
-          <template class="mybutton">
+          <template class="mybutton" slot-scope="scope">
             <el-button type="text">编辑</el-button>
             <el-button type="text">启用</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button type="text" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -137,7 +137,7 @@
 
 <script>
 import addquestion from "@/components/addquestion.vue";
-import { questionList } from "@/api/question";
+import { questionList,questionRemove} from "@/api/question";
 import { subjectList } from "@/api/subject";
 import { enterpriseList } from "@/api/enterprise";
 export default {
@@ -170,13 +170,37 @@ export default {
     };
   },
   methods: {
+    //删除数据
+    remove(item){
+      this.$confirm('你真的要删除这条'+item.subject_name, '溫馨提示', {
+        confirmButtonText: '確認',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        questionRemove(item.id).then(res=>{
+          if(res.data.code===200){
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            });
+          }
+        })
+        
+      }).catch(() => {});
+
+    },
+    //清空数据
+    clearData(){
+      this.questionForm={}
+      this.search()
+
+    },
     addquestion() {
       this.$refs.addquestion.dialogFormVisible = true;
     },
     handleSizeChange(size) {
       this.limit = size;
       this.search();
-      // window.console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(page) {
       this.page = page;

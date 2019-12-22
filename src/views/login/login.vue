@@ -58,21 +58,11 @@
 import register from "@/components/register.vue";
 import { setToken } from "@/utils/token.js";
 import { login } from "@/api/request.js";
+import { checkedPhone } from "@/utils/checked";
 export default {
   name: "login",
   data() {
-    var checkPhone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("手机号不能为空"));
-      } else {
-        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
-        if (reg.test(value)) {
-          callback();
-        } else {
-          callback(new Error("手机号不正确"));
-        }
-      }
-    };
+   
     return {
       form: {
         phone: "",
@@ -81,7 +71,7 @@ export default {
         checked: false
       },
       rules: {
-        phone: [{ validator: checkPhone, trigger: "blur" }],
+        phone: [{ validator: checkedPhone, trigger: "blur" }],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
           {

@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="editUser(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="editUser(scope.row)" v-mypower='["管理员","老师","学生"]'>编辑</el-button>
           <el-button
             type="text"
             size="small"
@@ -51,7 +51,7 @@
             @click="setStatus(scope.row.id)"
             v-if="scope.row.status==0"
           >启用</el-button>
-          <el-button type="text" size="small" @click="deleteUsers(scope.row.id)">删除</el-button>
+          <el-button type="text" size="small" @click="deleteUsers(scope.row.id)" v-mypower='["管理员","老师","学生"]'>删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -100,7 +100,6 @@ export default {
     adduser() {
       // this.$refs.adduser.id = "";
       this.$refs.adduser.userForm = {
-
         password:'123456'
       };
       this.$refs.adduser.seleted ="";
@@ -144,11 +143,9 @@ export default {
       this.search();
     },
     editUser(data) {
-      // window.console.log(id);
-      // this.$refs.adduser.id = id;
       this.$refs.adduser.userForm = JSON.parse(JSON.stringify(data));
-      this.$refs.adduser.seleted = data.role_id + "";
-      this.$refs.adduser.statusSelected = data.status + "";
+      this.$refs.adduser.seleted = data.role_id ;
+      this.$refs.adduser.statusSelected = data.status;
       this.$refs.adduser.title = "编辑用户";
       this.$refs.adduser.dialogFormVisible = true;
     },

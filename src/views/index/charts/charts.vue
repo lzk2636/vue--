@@ -3,24 +3,12 @@
       <div class="box-contain">
 <el-card class="box-card">
  <ul>
-     <li>
-         
+     <li v-for="(item, index) in 6" :key="index">
+        <div class="clrice"><span>55</span></div>
+        <p>今日增加题数</p>
      </li>
-       <li>
-         1
-     </li>
-       <li>
-         1
-     </li>
-       <li>
-         1
-     </li>
-       <li>
-         1
-     </li>
-  <li>
-         1
-     </li>
+      
+ 
  </ul>
 </el-card>
 
@@ -29,7 +17,12 @@
 </template>
 
 <script>
-export default {};
+// import defaultcharts from '../../../components/defaultcharts'
+export default {
+  components:{
+    // defaultcharts
+  }
+};
 </script>
 
 <style lang="less">
@@ -48,7 +41,24 @@ export default {};
               li{
                   flex: 1;
                   height: 100%;
-                  background: red
+                  background: red;
+                  display: flex;    
+                  align-items: center;
+                  flex-direction: column;
+                  .clrice{
+                    width: 93px;
+                    height: 93px;
+                    border-radius: 50%;
+                    // margin: 0 auto;
+                    border: 2px solid blue;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    span{
+                      text-align: center;
+
+                    }
+                  }
               }
           }
   

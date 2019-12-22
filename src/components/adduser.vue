@@ -12,14 +12,22 @@
       </el-form-item>
       <el-form-item label="角色" :label-width="formLabelWidth" prop="seleted">
         <el-select v-model="seleted" placeholder="选择角色">
-          <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value"></el-option>
-         
+          <el-option
+            v-for="(item, index) in options"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="状态" :label-width="formLabelWidth">
         <el-select v-model="statusSelected" placeholder="选择状态">
-          <el-option :label="item.label" :value="item.value" v-for="(item, index) in statusOption" :key="index" ></el-option>
-         
+          <el-option
+            :label="item.label"
+            :value="item.value"
+            v-for="(item, index) in statusOption"
+            :key="index"
+          ></el-option>
         </el-select>
       </el-form-item>
 
@@ -36,35 +44,9 @@
 
 <script>
 import { addUser, editUser } from "@/api/user";
+import { checkedPhone, checkEmail } from "@/utils/checked";
 export default {
   data() {
-    // 验证手机号
-    let checkedPhone = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入手机号码"));
-      } else {
-        let reg = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
-        if (reg.test(value)) {
-          // this.$refs.ruleForm.validateField('checkPass');
-          callback();
-        } else {
-          callback(new Error("手机格式不正确!!!"));
-        }
-      }
-    };
-    //验证邮箱
-    let checkEmail = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("请输入邮箱"));
-      } else {
-        let reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
-        if (!reg.test(value)) {
-          return callback(new Error("邮箱不匹配"));
-        }
-        callback();
-      }
-    };
-
     return {
       title: "新增用户",
       dialogFormVisible: false,
@@ -100,37 +82,31 @@ export default {
       //角色选项
       options: [
         {
-          value: "1",
-          label: "超级管理员"
-        },
-        {
-          value: "2",
+          value: 2,
           label: "管理员"
         },
         {
-          value: "3",
+          value: 3,
           label: "老师"
         },
-         {
-          value: "4",
+        {
+          value: 4,
           label: "学生"
         }
       ],
-      seleted:"2",
+      seleted: 2,
       //状态选项
-      statusOption:[
+      statusOption: [
         {
-          label:"开启",
-          value:"1"
-
+          label: "开启",
+          value: 1
         },
         {
-          label:"禁用",
-          value:"0"
-          
+          label: "禁用",
+          value: 0
         }
       ],
-      statusSelected:"1"
+      statusSelected: 1
     };
   },
   methods: {
@@ -140,25 +116,27 @@ export default {
         if (valid) {
           //新增用户
           if (!this.userForm.id) {
-            this.userForm.role_id=this.seleted;
+            this.userForm.role_id = this.seleted;
+            this.userForm.status = this.statusSelected;
             addUser(this.userForm).then(res => {
               window.console.log(res);
               if (res.data.code == 200) {
                 this.$message.success("提交成功");
                 this.dialogFormVisible = false;
                 this.$parent.search();
-              } else if(res.data.code==201) {
+              } else if (res.data.code == 201) {
                 this.$message.error(res.data.message);
               }
             });
           } else {
-            this.userForm.role_id=this.seleted;
+            this.userForm.role_id = this.seleted;
+            this.userForm.status = this.statusSelected;
             editUser(this.userForm).then(res => {
               // window.console.log(res)
               if (res.data.code === 200) {
                 this.$message.success("设置成功!!!");
-                this.$parent.search()
-                 this.dialogFormVisible = false;
+                this.$parent.search();
+                this.dialogFormVisible = false;
               }
             });
           }
@@ -176,8 +154,7 @@ export default {
       this.$refs.userForm.resetFields();
     }
   },
-  created() {
-  }
+  created() {}
 };
 </script>
 

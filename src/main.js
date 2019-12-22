@@ -5,6 +5,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './styles/base.less'
 import store from '@/store/store'
+import '@/directives/directive.js'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false

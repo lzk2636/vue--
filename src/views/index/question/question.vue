@@ -278,7 +278,7 @@ export default {
     //初始化数据
     subjectList().then(res => {
       if (res.data.code === 200) {
-        window.console.log(res);
+        // window.console.log(res);
         this.subjectList = res.data.data.items;
       }
     });

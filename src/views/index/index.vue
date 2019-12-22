@@ -8,35 +8,30 @@
         <span class="title">黑马面面</span>
       </div>
       <div class="right">
-        <img class="usericon" :src="$store.state.userInfo.avatar" />
-        <span class="username">{{$store.state.userInfo.username}},你好</span>
+        <img class="usericon" :src="userInfo.avatar" />
+        <span class="username">{{userInfo.username}},你好</span>
         <el-button type="primary" size="small" @click="logout">退出</el-button>
       </div>
     </el-header>
     <el-container class="index-bottom">
       <!-- 侧栏菜单 -->
       <el-aside width="auto">
-        <el-menu :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
-          <el-menu-item index="/index/charts">
-            <i class="el-icon-pie-chart"></i>
-            <span slot="title">数据概览</span>
-          </el-menu-item>
-          <el-menu-item index="/index/user">
-            <i class="el-icon-user"></i>
-            <span slot="title">用户列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/question">
-            <i class="el-icon-edit-outline"></i>
-            <span slot="title">题库列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/enterprise">
-            <i class="el-icon-office-building"></i>
-            <span slot="title">企业列表</span>
-          </el-menu-item>
-          <el-menu-item index="/index/subject">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">学科列表</span>
-          </el-menu-item>
+        <el-menu
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          router
+        >
+          <template v-for="(item, index) in children">
+            <el-menu-item
+              :key="index"
+              :index="'/index/'+item.path"
+              v-if="item.meta.power.includes(userInfo.role)"
+            >
+              <i :class="item.meta.icon"></i>
+              <span slot="title">{{item.meta.title}}</span>
+            </el-menu-item>
+          </template>
         </el-menu>
       </el-aside>
       <!-- router-view切换地址 -->
@@ -48,12 +43,15 @@
 </template>
 
 <script>
-import {  removeToken } from "@/utils/token";
+import { removeToken } from "@/utils/token";
 import { logoutUser } from "../../api/user";
+import children from "@/utils/children.js";
 export default {
   data() {
     return {
-      isCollapse: false
+      //侧边栏显示或隐藏
+      isCollapse: false,
+      children
     };
   },
   methods: {
@@ -66,16 +64,15 @@ export default {
       })
         .then(() => {
           logoutUser().then(res => {
-            window.console.log(res)
-            if(res.data.code===200){
+            // window.console.log(res);
+            if (res.data.code === 200) {
               this.$message({
                 message: "退出登录",
                 type: "error"
               });
               removeToken();
-              this.$store.state.userInfo={}
-              this.$router.push('/login')            
-
+              this.$store.state.userInfo = {};
+              this.$router.push("/login");
             }
           });
         })
@@ -88,22 +85,10 @@ export default {
         });
     }
   },
-  beforeCreate() {
-    // if (!getToken()) {
-    //   this.$message.error("重新登录");
-    //   this.$route.push("/login");
-    // }
-  },
-  created() {
-    // userInfo().then(res => {
-    //   if (res.data.code === 200) {
-    //   window.console.log(res);
-    //   } else if (res.data.code === 206) {
-    //     this.$message.error("toke 错误不能伪造");
-    //     removeToken();
-    //     this.$route.push("/login");
-    //   }
-    // });
+  computed: {
+    userInfo: function() {
+      return this.$store.state.userInfo;
+    }
   }
 };
 </script>

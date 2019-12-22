@@ -1,8 +1,6 @@
 <template>
-
             <el-form ref="form" label-width="80px" style="width:394px">
                <el-form-item>
-             
                </el-form-item>
               <el-form-item>
                 <el-input placeholder="请输入手机号" prefix-icon="el-icon-user" ></el-input>

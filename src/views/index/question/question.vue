@@ -172,9 +172,19 @@ export default {
   methods: {
     //编辑题目
     setEdit(item){
+      window.console.log(item)
+      // item.city=item.city.split(',')
       this.$refs.addquestion.title="编辑题目测试"
       this.$refs.addquestion.dialogFormVisible=true;
       this.$refs.addquestion.addquestform=JSON.parse(JSON.stringify(item))
+       this.$refs.addquestion.addquestform.city=this.$refs.addquestion.addquestform.city.split(",")
+      //  window.console.log( this.$refs.addquestion.addquestform.multiple_select_answer)
+       if(this.$refs.addquestion.addquestform.multiple_select_answer!=''){
+         this.$refs.addquestion.addquestform.multiple_select_answer=this.$refs.addquestion.addquestform.multiple_select_answer.split(",")
+       }else{
+           this.$refs.addquestion.addquestform.multiple_select_answer=[]
+
+       }
     },
     //设置题目状态
     // questionStatus
@@ -197,11 +207,17 @@ export default {
         type: 'warning'
       }).then(() => {
         questionRemove(item.id).then(res=>{
+          // if(this.tableData)
           if(res.data.code===200){
             this.$message({
               message: '删除成功',
               type: 'success'
             });
+            if(this.tableData.length==1){
+              this.searcher()
+            }else{
+              this.search()
+            }
           }
         })
         
@@ -221,29 +237,31 @@ export default {
           city: [],
           select_options: [
           {
-            label: "",
+            label: "A",
             text: "",
             image: ""
           },
           {
-            label: "",
+            label: "B",
             text: "",
             image: ""
           },
           {
-            label: "",
+            label: "C",
             text: "",
             image: ""
           },
           {
-            label: "",
+            label: "D",
             text: "",
             image: ""
           }
         ],
          
         multiple_select_answer: [],
+        
        }
+       this.$refs.addquestion.videoUrl= "";
 
     },
     handleSizeChange(size) {

@@ -64,8 +64,8 @@ router.beforeEach((to, from, next) => {
                         if(to.meta.power==undefined){
                             return  Message.error("你没有这个访问权限,请联系管理员");
                         }else if(to.meta.power.includes(store.state.userInfo.role)){
-                            window.console.log(to);
-                            window.console.log(from);
+                            // window.console.log(to);
+                            // window.console.log(from);
                             next()
                         }else{
                             Message.error("你没有这个访问权限,请联系管理员");

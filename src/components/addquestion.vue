@@ -90,7 +90,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessA"
@@ -109,7 +109,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessB"
@@ -128,7 +128,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessC"
@@ -147,7 +147,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessD"
@@ -180,7 +180,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessA"
@@ -199,7 +199,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessB"
@@ -218,7 +218,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessC"
@@ -237,7 +237,7 @@
               <el-col :span="7" :offset="1">
                 <el-upload
                   class="avatar-uploader"
-                  action="http://127.0.0.1/heimamm/public/question/upload"
+                 :action="action"
                   :show-file-list="false"
                   name="file"
                   :on-success="handleAvatarSuccessD"
@@ -270,7 +270,7 @@
         <el-form-item label="视屏解析" :label-width="formLabelWidth">
           <el-upload
             class="vidieo"
-            action="http://127.0.0.1/heimamm/public/question/upload"
+            :action="action"
             :on-success="handleAudioSuccess"
             :before-upload="beforeAudioUpload"
             name="file"
@@ -355,7 +355,7 @@ export default {
           }
         ]
       },
-
+      action:process.env.VUE_APP_BASEURL +"question/upload",
       formLabelWidth: "280px",
       dialogFormVisible: false,
       imageUrlA: "",

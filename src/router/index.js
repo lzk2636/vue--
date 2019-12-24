@@ -55,6 +55,7 @@ router.beforeEach((to, from, next) => {
                     if (res.data.data.status == 0) {
                         Message.error("你的账号已经被封号了,请联系管理员");
                         next("/login")
+                        // next()
                     } else {
                         
                         res.data.data.avatar = process.env.VUE_APP_BASEURL + res.data.data.avatar

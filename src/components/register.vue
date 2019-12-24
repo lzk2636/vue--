@@ -5,7 +5,7 @@
         <el-upload
           class="avatar-uploader"
           name="image"
-          action="http://127.0.0.1/heimamm/public/uploads"
+          :action="action"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
@@ -75,8 +75,9 @@ export default {
       dialogFormVisible: false,
       formLabelWidth: "65px",
       imageUrl: "",
+      action:process.env.VUE_APP_BASEURL +"uploads",
       //图形码
-      tcodeUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
+      tcodeUrl: process.env.VUE_APP_BASEURL + "captcha?type=login",
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
@@ -140,7 +141,7 @@ export default {
     //条线码点击切换事件
     changCodeUrl() {
       this.tcodeUrl =
-        process.env.VUE_APP_BASEURL + "/captcha?type=sendsms&" + Date.now();
+        process.env.VUE_APP_BASEURL + "captcha?type=sendsms&" + Date.now();
     },
     //发送手机号获取验证码
     sendPhone() {
